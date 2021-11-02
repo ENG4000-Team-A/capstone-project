@@ -1,0 +1,17 @@
+<html>
+	<body>
+		<p id="test1"></p>
+		<p id="test2"></p>
+		<p id="test3"></p>
+		<script src="js/countdown.js"></script>
+		<script>
+			var timerTest = 10;
+			var timerTest2 = 119;
+			var timerTest3 = 60*60;
+			var count = (Date.now() /1000 );
+			startCountdown("test1",count + timerTest);
+			startCountdown("test2",count + timerTest2);
+			startCountdown("test3",count + timerTest3);
+		</script>
+	</body>
+</html>
