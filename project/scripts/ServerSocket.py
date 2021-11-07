@@ -2,90 +2,137 @@
 
 import socket
 import selectors
-import time
-import types
+from socket import AF_INET, SOCK_STREAM
+from selectors import EVENT_READ, EVENT_WRITE 
+from types import SimpleNamespace
 import json
+
 HOST = '127.0.0.1'
 PORT = 5073
+class ServerSocket:
+    """A socket implementation for communication from ConsoleTracker to any External Applications"""
+    def __init__(self):
+        """
+        Attributes
+        ----------
+        msg_queue: Holds messages to sent to external app
+        response_queue: Holds reponse messages from external app
+        msg_id: message id (Unique)
+        lsock: the server socket
+        sel: selector to allows effiecient concurrency
+        """
+        self.msg_queue = []
+        self.response_queue = []
+        self.msg_id = 0
 
-EXTERNAL_FOUND = False
-MSG_QUEUE = []
-RESPONSE_QUEUE = []
-ID = 0
+        self.external_found = False
+        self.sel = selectors.DefaultSelector()
 
-'''
-Barebones implementation of a socket. Need to rewrite as a class, use ssl, etc.
-Run this file. Then ExternalClient, then InternalClient.
+        self.lsock = socket.socket(AF_INET, SOCK_STREAM)
+        self.lsock.bind((HOST, PORT))
+        self.lsock.listen()
+        self.lsock.setblocking(False)
+        self.sel.register(self.lsock, EVENT_READ, data=None)
 
-'''
-def accept_wrapper(sel,sock):
-    global EXTERNAL_FOUND, EXTERNAL_SOCK, ID
-    conn, addr = sock.accept()  # Should be ready to read
-    print('accepted connection from', conn, addr)
-    conn.setblocking(False)
-    data = types.SimpleNamespace(addr=addr, external=False, uid=ID) if EXTERNAL_FOUND else types.SimpleNamespace(addr=addr, external=True)
-    EXTERNAL_FOUND = True
-    ID +=1
-    events = selectors.EVENT_READ | selectors.EVENT_WRITE
-    sel.register(conn, events, data=data)
+    def start(self):
+        """Main function starting the socket server"""
+        print("Starting server...")
+        while True:
+            events = self.sel.select(timeout=None)
+            for key, mask in events:
+                sock = key.fileobj
+                if key.data is None:
+                    self.accept_client(sock)
+                else:
+                    data = key.data
+                    if mask & EVENT_READ:
+                        self.read_connection(sock, data)
+                    if mask & EVENT_WRITE:
+                        self.write_to_connection(sock, data)
 
-def get_msg(data):
-    global RESPONSE_QUEUE
-    response = None
-    for i in RESPONSE_QUEUE:
-        if i["uid"] == data.uid:
-            response = i
-            RESPONSE_QUEUE.remove(i)
-            return response
-    return response
+    def accept_client(self, sock):
+        """Handles a new client to the socket
 
-def service_connection(sel,key, mask):
-    global MSG_QUEUE, RESPONSE_QUEUE
-    sock = key.fileobj
-    data = key.data
-    if mask & selectors.EVENT_READ:
-        recv_data = sock.recv(1024)  # Should be ready to read
+        Parameters
+        ----------
+        sock: Socket
+            The client socket
+        """
+        conn, addr = sock.accept()
+        print('Accepted connection from', conn, addr)
+        conn.setblocking(False)
+        data = SimpleNamespace(addr=addr, external=False, mid=self.msg_id) if self.external_found else SimpleNamespace(addr=addr, external=True)
+        self.msg_id += 1
+        self.external_found = True
+        events = EVENT_READ | EVENT_WRITE
+        self.sel.register(conn, events, data=data)
+
+    def read_connection(self, sock, data):
+        """Reads from a client socket
+
+	Parameters
+        ----------
+        sock: Socket
+            The client socket
+        data: SimpleNamespace
+            An object holding data specific to socket: address, external, message_id
+        """
+        recv_data = sock.recv(1024)
         if recv_data:
             dcd_recv_data = json.loads(recv_data.decode())
             if data.external:
-                print("external response:", dcd_recv_data)
-                RESPONSE_QUEUE.append(dcd_recv_data)
+                print("External Client Response:", dcd_recv_data)
+                self.response_queue.append(dcd_recv_data)
             else:
-                dcd_recv_data['uid'] = data.uid
-                MSG_QUEUE.append(dcd_recv_data)
+                dcd_recv_data['mid'] = data.mid
+                self.msg_queue.append(dcd_recv_data)
         elif not data.external:
-            print('closing connection to', data.addr)
-            sel.unregister(sock)
+            print('Closing connection to', data.addr)
+            self.sel.unregister(sock)
             sock.close()
-    if mask & selectors.EVENT_WRITE:
-        if data.external:
-            if len(MSG_QUEUE) > 0:
-                msg = MSG_QUEUE.pop()
-                sent = sock.send(json.dumps(msg).encode())
-                print("Sent to external:", msg)
-        else:
-            response = get_msg(data)
+
+    def write_to_connection(self, sock, data):
+        """Writes to a client socket
+
+	Parameters
+        ----------
+        sock: Socket
+            The client socket
+        data: SimpleNamespace
+            An object holding data specific to socket: address, external, message_id
+	"""
+        if data.external and len(self.msg_queue) > 0:
+            msg = self.msg_queue.pop()
+            sent = sock.send(json.dumps(msg).encode())
+            print("Sent to external:", msg)
+        elif not data.external:
+            response = self.get_message(data)
             if response is not None:
-                print('echoing', response, 'to', data.addr)
-                sent = sock.send(json.dumps(response).encode())  # Should be ready to write
+                print('Sent to client', response)
+                sent = sock.send(json.dumps(response).encode())
 
-def main():
-    sel = selectors.DefaultSelector()
+    def get_message(self, data):
+        """Retrieves a response for a client if there exists one.
 
-    lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    lsock.bind((HOST, PORT))
-    lsock.listen()
-    print('listening on', (HOST, PORT))
-    lsock.setblocking(False)
-    sel.register(lsock, selectors.EVENT_READ, data=None)
-
-    while True:
-        events = sel.select(timeout=None)
-        for key, mask in events:
-            if key.data is None:
-                accept_wrapper(sel,key.fileobj)
-            else:
-                service_connection(sel, key, mask)
+        Parameters
+        ----------
+        data: SimpleNamespace
+            An object holding data specific to socket: address, external, message_id
+        """
+        response = None
+        for i in self.response_queue:
+            if i["mid"] == data.mid:
+                response = i
+                self.response_queue.remove(i)
+                return response
+        return response
 
 if __name__ == "__main__":
-    main()
+    
+    config_data = None
+    with open('config.json', 'r') as f:
+        config_data = json.load(f)
+    print(config_data['external_client_ipv4'])
+
+    server = ServerSocket()
+    server.start()
