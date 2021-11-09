@@ -3,14 +3,17 @@
 import socket
 import selectors
 from socket import AF_INET, SOCK_STREAM
-from selectors import EVENT_READ, EVENT_WRITE 
+from selectors import EVENT_READ, EVENT_WRITE
 from types import SimpleNamespace
 import json
 
 HOST = '127.0.0.1'
 PORT = 5073
+
+
 class ServerSocket:
     """A socket implementation for communication from ConsoleTracker to any External Applications"""
+
     def __init__(self):
         """
         Attributes
@@ -61,7 +64,8 @@ class ServerSocket:
         conn, addr = sock.accept()
         print('Accepted connection from', conn, addr)
         conn.setblocking(False)
-        data = SimpleNamespace(addr=addr, external=False, mid=self.msg_id) if self.external_found else SimpleNamespace(addr=addr, external=True)
+        data = SimpleNamespace(addr=addr, external=False, mid=self.msg_id) if self.external_found else SimpleNamespace(
+            addr=addr, external=True)
         self.msg_id += 1
         self.external_found = True
         events = EVENT_READ | EVENT_WRITE
@@ -103,13 +107,13 @@ class ServerSocket:
 	"""
         if data.external and len(self.msg_queue) > 0:
             msg = self.msg_queue.pop()
-            sent = sock.send(json.dumps(msg).encode())
+            sock.send(json.dumps(msg).encode())
             print("Sent to external:", msg)
         elif not data.external:
             response = self.get_message(data)
             if response is not None:
                 print('Sent to client', response)
-                sent = sock.send(json.dumps(response).encode())
+                sock.send(json.dumps(response).encode())
 
     def get_message(self, data):
         """Retrieves a response for a client if there exists one.
@@ -127,8 +131,8 @@ class ServerSocket:
                 return response
         return response
 
+
 if __name__ == "__main__":
-    
     config_data = None
     with open('config.json', 'r') as f:
         config_data = json.load(f)
