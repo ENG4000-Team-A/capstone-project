@@ -117,3 +117,6 @@ GitHub.sublime-settings
 
 # JetBrains configs
 .idea/
+
+#Mac-dev
+.DS_Store

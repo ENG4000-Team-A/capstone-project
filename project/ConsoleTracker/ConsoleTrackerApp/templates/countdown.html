@@ -1,0 +1,24 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Countdown for Timer</title>
+</head>
+
+<body>
+  {% load static %}
+  <script src="{% static 'countdown.js' %}"></script>
+  <script>
+      var timer = {{ timeLeft }};
+      startCountdown("timer",count + timerTest);
+    </script>
+  <h1>Countdown Timer for Machine {{ Machine_ID }}</h1>
+  <h2>Hi, {{ username }}</h2>
+  <div>
+    <p id="timer">9000</p>
+  </div>
+</body>
+</html>
