@@ -16,10 +16,10 @@
       var count = (Date.now() /1000 );
       startCountdown("timer",count + timer);
     </script>
-  <h1>Countdown Timer for Machine {{ Machine_ID }}</h1>
-  <h2>Hi, {{ username }}</h2>
+  <h1>Countdown Timer for Machine <strong style="color: red;">{{ Machine_ID }}</strong></h1>
+  <h2>Hi, <strong style="color: red;">{{ username }}</strong></h2>
   <div>
-    <p id="timer"></p>
+    <p>Time left: <strong style="color: red;" id="timer"></strong></p>
   </div>
 </body>
 </html>
