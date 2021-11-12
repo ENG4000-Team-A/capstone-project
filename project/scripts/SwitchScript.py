@@ -2,7 +2,7 @@ import asyncio
 import time
 from kasa import SmartPlug
 from kasa import Discover
-#
+# to use pip install python-kasa
 #call this function fo find all the ips and switch names in found_devices.items()
 async def findDevices():
     found_devices = asyncio.run(Discover.discover())
