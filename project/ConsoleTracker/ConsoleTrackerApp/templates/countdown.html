@@ -10,15 +10,16 @@
 
 <body>
   {% load static %}
-  <script src="{% static 'countdown.js' %}"></script>
+  <script src="{% static 'js/countdown.js' %}"></script>
   <script>
       var timer = {{ timeLeft }};
-      startCountdown("timer",count + timerTest);
+      var count = (Date.now() /1000 );
+      startCountdown("timer",count + timer);
     </script>
   <h1>Countdown Timer for Machine {{ Machine_ID }}</h1>
   <h2>Hi, {{ username }}</h2>
   <div>
-    <p id="timer">9000</p>
+    <p id="timer"></p>
   </div>
 </body>
 </html>
