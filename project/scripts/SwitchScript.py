@@ -8,7 +8,7 @@ async def findDevices():
     return found_devices
 
 #  This function takes in the IP address and state of a switch to then turn it on/off
-async def ConsolSwitch(state,IP):
+async def ConsolSwitch(state, IP):
     plug = SmartPlug(IP)
     try:
         if(state==1):
