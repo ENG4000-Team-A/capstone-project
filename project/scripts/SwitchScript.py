@@ -8,7 +8,7 @@ async def findDevices():
     found_devices = asyncio.run(Discover.discover())
     return found_devices
 
-#call this function with the the state you want the switch in and its ip to turn off/on the switch
+#  This function takes in the IP address and state of a switch to then turn it on/off
 async def ConsolSwitch(state,IP):
     plug = SmartPlug(IP)
     try:
