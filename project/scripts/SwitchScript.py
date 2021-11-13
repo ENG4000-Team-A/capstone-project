@@ -21,4 +21,4 @@ async def ConsolSwitch(state,IP):
         else:
             return "failer"
     except:
-        print("Failer to communicate")
+        print("Failed to communicate")
