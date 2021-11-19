@@ -15,13 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ConsoleTrackerApp import views, tasks
+from ConsoleTrackerApp import views
 from django.conf import settings
 from django.conf.urls.static import static
+from ConsoleTrackerApp import tasks
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path('timer/', views.timer, name='timer'),
+                  path('time_manager/<int:id>', views.time_manager, name='time_manager'),
+                  path('timer/<int:id>', views.timer, name='timer'),
+                  path('login/', views.login, name='login'),
+                  path('machines/', views.machines.as_view(), name='machines'),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # runs the time checking background task at startup
