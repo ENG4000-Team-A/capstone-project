@@ -1,0 +1,27 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Countdown for Timer</title>
+</head>
+
+<body>
+{% block content %}
+  <h1>Machine List</h1>
+  {% if machine_list %}
+  <ul>
+    {% for machine in machine_list %}
+      <li>
+        {% if machine.active %} <a href="/timer">{{ machine.name }}</a> (ACTIVE) {% else %} <a>{{ machine.name }}</a> (NOT ACTIVE) {% endif %} 
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no Machines in the library.</p>
+  {% endif %}
+{% endblock %}
+</body>
+</html>
