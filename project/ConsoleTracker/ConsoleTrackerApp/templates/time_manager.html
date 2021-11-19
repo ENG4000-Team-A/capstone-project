@@ -1,0 +1,22 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Time Manager | Machine {{ machine.id }}</title>
+</head>
+
+<body>
+  {% load static %}
+    <h2>User: {{user.name}}</h2>
+    <h2>Time Remaining: {{ timeLeft }}</h2>
+    <form method="post"> {% csrf_token %}
+        <label for="time"> Would you like to add the time remaining to the machine:</label>
+        <!--<input type="number" id="time" name="time"><br><br>-->
+        <input type="hidden" id="time" name="time" value="{{user.time}}">
+        <input type="submit" {% if machine.active %} disabled {% endif %}>
+    </form>
+</body>
+</html>

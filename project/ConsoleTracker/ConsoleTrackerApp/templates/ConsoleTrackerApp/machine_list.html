@@ -1,0 +1,31 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Machine List</title>
+</head>
+
+<body>
+{% block content %}
+  <h1>Machine List</h1>
+  {% if machine_list %}
+  <ul>
+    {% for machine in machine_list %}
+      <li>
+        {% if machine.active %} 
+          <a>{{ machine.name }}</a> <span style="color:red;">(IN USE)</span> 
+        {% else %} 
+          <a href="/time_manager/{{ machine.id }}">{{ machine.name }}</a> <span style="color:green;">(AVAILABLE)</span> 
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no Machines in the library.</p>
+  {% endif %}
+{% endblock %}
+</body>
+</html>
