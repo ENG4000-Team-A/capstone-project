@@ -18,8 +18,12 @@ from django.urls import path
 from ConsoleTrackerApp import views
 from django.conf import settings
 from django.conf.urls.static import static
+from ConsoleTrackerApp import tasks
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('timer/', views.timer, name = 'timer'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# runs the time checking background task at startup
+tasks.main()
