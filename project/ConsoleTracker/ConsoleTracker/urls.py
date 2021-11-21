@@ -21,6 +21,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('timer/', views.timer, name = 'timer'),
+    path('timer/<int:id>', views.timer, name = 'timer'),
     path('machines/', views.machines.as_view(), name='machines'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
