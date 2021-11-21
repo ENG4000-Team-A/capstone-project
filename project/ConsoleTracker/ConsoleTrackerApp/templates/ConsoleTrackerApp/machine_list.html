@@ -15,7 +15,7 @@
   <ul>
     {% for machine in machine_list %}
       <li>
-        {% if machine.active %} <a href="/timer">{{ machine.name }}</a> (ACTIVE) {% else %} <a>{{ machine.name }}</a> (NOT ACTIVE) {% endif %} 
+        {% if machine.active %} <a>{{ machine.name }}</a> <span style="color:red;">(IN USE)</span> {% else %} <a href="/timer/{{ machine.id }}">{{ machine.name }}</a> <span style="color:green;">(AVAILABLE)</span> {% endif %}
       </li>
     {% endfor %}
   </ul>
