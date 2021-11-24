@@ -22,6 +22,9 @@ def query_time():
 
 		for query in query_set:
 			query.machine.active = False
+			query.machine.save()
+			query.user.time = 0
+			query.user.save()
 			query.expired = True
 			query.save()
 
