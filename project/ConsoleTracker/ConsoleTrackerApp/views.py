@@ -5,11 +5,25 @@ from .forms import NameForm
 # Create your views here.
 
 def timer(request):
-	username = 'User12345'
-	timeLeft = 3000
-	Machine_ID = 1
-	return render(request, "countdown.html", {"username": username, "Machine_ID": Machine_ID, "timeLeft": timeLeft})
+    if request.method == 'POST':
+        form  = NameForm(request.POST)
+        timeLeft = int(form.data.get('time'))
+        
+        # temporary values until these are linked to database
+        username = 'temp user'
+        Machine_ID = 2
+           
+    else:  #this else block should be deprecated soon. Leaving it as default behaviour  
+        username = 'User12345'
+        timeLeft = 3000
+        Machine_ID = 1
+    
+    return render(request, "countdown.html", {"username": username, "Machine_ID": Machine_ID, "timeLeft": timeLeft})
 
+def time_mngr(request):
+    return render(request, "time_manager.html", {} )
+    
+    
 def login(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -20,7 +34,8 @@ def login(request):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return HttpResponseRedirect('/timer')
+            return HttpResponseRedirect('timer_mngr')
+            #return HttpResponseRedirect('/timer')
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NameForm()

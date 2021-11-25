@@ -1,0 +1,19 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Time Manager</title>
+</head>
+
+<body>
+  {% load static %}
+    <form action="/timer/" method="post"> {% csrf_token %}
+        <label for="time"> Time:</label>
+        <input type="number" id="time" name="time"><br><br>
+        <input type="submit">
+    </form>
+</body>
+</html>

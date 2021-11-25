@@ -22,6 +22,7 @@ from ConsoleTrackerApp import tasks
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('time_mngr/', views.time_mngr, name = 'time manager'),
     path('timer/', views.timer, name = 'timer'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
