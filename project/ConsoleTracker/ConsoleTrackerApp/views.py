@@ -7,12 +7,24 @@ from .forms import NameForm
 
 # Create your views here.
 
-def timer(request, id):
-	username = 'User12345'
-	timeLeft = 3000
-	Machine_ID = 1
-	machine = get_object_or_404(Machine, id=id)
-	return render(request, "countdown.html", {"machine": machine, "username": username, "Machine_ID": Machine_ID, "timeLeft": timeLeft})
+def timer(request):
+    if request.method == 'POST':
+        form  = NameForm(request.POST)
+        timeLeft = int(form.data.get('time'))
+        
+        # temporary values until these are linked to database
+        username = 'User96'
+        Machine_ID = 2
+           
+    else:  #this else block should be deprecated soon. Leaving it as default behaviour  
+        username = 'User12345'
+        timeLeft = 3000
+        Machine_ID = 1
+
+    return render(request, "countdown.html", {"username": username, "Machine_ID": Machine_ID, "timeLeft": timeLeft})
+
+def time_manager(request):
+    return render(request, "time_manager.html", {})
 
 class machines(ListView):
 	model = Machine
