@@ -7,7 +7,7 @@ from .forms import NameForm
 
 # Create your views here.
 
-def timer(request):
+def timer(request, id):
     if request.method == 'POST':
         form  = NameForm(request.POST)
         timeLeft = int(form.data.get('time'))
@@ -21,7 +21,8 @@ def timer(request):
         timeLeft = 3000
         Machine_ID = 1
 
-    return render(request, "countdown.html", {"username": username, "Machine_ID": Machine_ID, "timeLeft": timeLeft})
+    machine = get_object_or_404(Machine, id=id)
+    return render(request, "countdown.html", {"machine": machine, "username": username, "Machine_ID": Machine_ID, "timeLeft": timeLeft})
 
 def time_manager(request):
     return render(request, "time_manager.html", {})
@@ -39,7 +40,7 @@ def login(request):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return HttpResponseRedirect('/timer')
+            return HttpResponseRedirect('/machines')
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NameForm()

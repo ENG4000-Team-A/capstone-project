@@ -10,7 +10,7 @@
 
 <body>
   {% load static %}
-    <form action="/timer/" method="post"> {% csrf_token %}
+    <form action="/timer/2" method="post"> {% csrf_token %}
         <label for="time"> Time:</label>
         <input type="number" id="time" name="time"><br><br>
         <input type="submit">

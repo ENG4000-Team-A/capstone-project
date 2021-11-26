@@ -24,7 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('time_manager/', views.time_manager, name = 'time_manager'),
     path('timer/<int:id>', views.timer, name = 'timer'),
-    path('timer/', views.timer, name = 'timer'),
     path('login/', views.login, name = 'login'),
     path('machines/', views.machines.as_view(), name='machines'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
