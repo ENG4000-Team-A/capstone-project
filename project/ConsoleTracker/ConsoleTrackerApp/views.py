@@ -2,13 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import NameForm
 
+
 # Create your views here.
 
 def timer(request):
-	username = 'User12345'
-	timeLeft = 3000
-	Machine_ID = 1
-	return render(request, "countdown.html", {"username": username, "Machine_ID": Machine_ID, "timeLeft": timeLeft})
+    username = 'User12345'
+    timeLeft = 3000
+    Machine_ID = 1
+    return render(request, "countdown.html", {"username": username, "Machine_ID": Machine_ID, "timeLeft": timeLeft})
+
 
 def login(request):
     # if this is a POST request we need to process the form data
@@ -24,5 +26,4 @@ def login(request):
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NameForm()
-    return render(request, "login.html",  {'form': form})
-    
+    return render(request, "login.html", {'form': form})
