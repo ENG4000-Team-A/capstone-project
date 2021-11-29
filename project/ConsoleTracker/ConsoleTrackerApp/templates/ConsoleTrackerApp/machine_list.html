@@ -18,11 +18,7 @@
         {% if machine.active %} 
           <a>{{ machine.name }}</a> <span style="color:red;">(IN USE)</span> 
         {% else %} 
-          {% if machine.id == 2 %} 
-          <a href="/time_manager/">{{ machine.name }}</a> <span style="color:green;">(AVAILABLE)</span> 
-          {% else %} 
-          <a href="/timer/{{ machine.id }}">{{ machine.name }}</a> <span style="color:green;">(AVAILABLE)</span> 
-          {% endif %}
+          <a href="/time_manager/{{ machine.id }}">{{ machine.name }}</a> <span style="color:green;">(AVAILABLE)</span> 
         {% endif %}
       </li>
     {% endfor %}

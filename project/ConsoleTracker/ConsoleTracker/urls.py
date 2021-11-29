@@ -22,7 +22,7 @@ from ConsoleTrackerApp import tasks
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('time_manager/', views.time_manager, name = 'time_manager'),
+    path('time_manager/<int:id>', views.time_manager, name = 'time_manager'),
     path('timer/<int:id>', views.timer, name = 'timer'),
     path('login/', views.login, name = 'login'),
     path('machines/', views.machines.as_view(), name='machines'),

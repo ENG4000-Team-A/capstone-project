@@ -11,7 +11,6 @@ class TimeStamp(models.Model):
     minutes = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(60)], default=0)
     seconds = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(60)], default=0)
 
-
 class Machine(models.Model):
     name = models.TextField(blank=True, null=False)
     active = models.BooleanField(default=False)
