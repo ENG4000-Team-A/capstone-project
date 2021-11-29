@@ -15,14 +15,14 @@ def timer(request, id):
     # set variables
     user_uses_machine = None
     epochTime = 0;
-    #Enter the countdown only if the machine is active (set to the false of this for now as user_uses_machine doesnt set machine as active)
-    if not machine.active:
+    #Enter the countdown only if the machine is active
+    if machine.active:
+        #if the machine is active get the relationship model with the user
         user_uses_machine = User_uses_machine.objects.get(machine=machine, expired=False)
         user = user_uses_machine.user
         epochTime = user_uses_machine.end_time.timestamp()
-    username = user.name
-    timeLeft = user.time
-    return render(request, "countdown.html", {"machine": machine, "username": username, "timeLeft": timeLeft, "user_uses_machine": user_uses_machine, "epochTime": epochTime})
+    username = "Not In Use"
+    return render(request, "countdown.html", {"machine": machine, "username": username, "user_uses_machine": user_uses_machine, "epochTime": epochTime})
     
 def time_manager(request, id):
     # get machine and user objects
@@ -32,7 +32,7 @@ def time_manager(request, id):
     if request.method == 'POST':
         #make sure machine is not already active
         if not machine.active:
-            #if the machine is not active add the user to the machine
+            #if the machine is not active add the user and the machine to the relationship model
             User_uses_machine.objects.create(user=user, machine=machine)
         #redirect to timer countdown page
         return HttpResponseRedirect('/timer/' + str(id))
