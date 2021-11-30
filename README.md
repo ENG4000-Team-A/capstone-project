@@ -2,7 +2,6 @@
 ##  Console Management System for Gaming Cafes 
 
 ### **Context**
----
 Currently, Gaming Cafes are able to exercise a high degree of control over the computers that their customers can use. Some of these important functions include granting/revoking access to the computer, maintaining a time limit per customer, and the ability to gradually warn a customer of their time remaining. However, this control is limited to computers only. 
 
 **Gaming Cafes are unable to exercise the same level of control over consoles.**
@@ -14,7 +13,6 @@ Our group aims to rectify this by creating a lightweight web application that wi
 * [Kasa](https://github.com/python-kasa/python-kasa)
 
 ### **Getting Started**
----
 Follow these steps to set up the project locally.
 
 1. Make sure [*Python*](https://www.python.org/downloads/) is installed on your machine. This project requires version 3.0 or higher.
