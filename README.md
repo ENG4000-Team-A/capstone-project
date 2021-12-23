@@ -33,10 +33,10 @@ python3 manage.py runserver
     - [x] User is able to select the machine they are using
     - [x] User is able to input an amount of time to add to their timer
     - [x] Able to connect to smart switches
-- [ ] Minimal Viable Product
-    - [ ] Expiring timer powers switch off
-    - [ ] User data is stored in database (name, contact info, time)
-    - [ ] When user is active, update time accordingly
+- [x] Minimal Viable Product
+    - [x] Expiring timer powers switch off
+    - [x] User data is stored in database (name, contact info, time)
+    - [x] When user is active, update time accordingly
 - [ ] Release
     - [ ] UI/UX Improvements
     - [ ] Communicates with OPUS Software
