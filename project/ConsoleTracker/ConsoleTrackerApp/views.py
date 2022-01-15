@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
+
 from .forms import NameForm
 from django.views.generic.list import ListView
 from .models import Machine, User, User_uses_machine
@@ -51,11 +52,15 @@ def login(request):
         # create a form instance and populate it with data from the request:
         form = NameForm(request.POST)
         # check whether it's valid:
-        if form.is_valid() and form.validate_login(form.cleaned_data['uname'], form.cleaned_data['pword']):
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            return HttpResponseRedirect('/machines')
+        if form.is_valid():
+            data = form.validate_login(form.cleaned_data['uname'], form.cleaned_data['pword'])
+            if data is not None:
+                # process the data in form.cleaned_data as required
+                # ...
+                # redirect to a new URL:
+                # For now it will redirect to the same page after attempted login
+                # but now just show the json response for us to observe
+                return render(request, 'login.html', {'form': form, 'data': data})
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NameForm()

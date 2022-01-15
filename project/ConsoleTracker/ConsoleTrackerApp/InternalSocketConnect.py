@@ -14,6 +14,6 @@ class InternalSocket():
                       .format(m="Sending username & password", u=username, p=password).encode())
             data = s.recv(1024)
             data = json.loads(data.decode())
-            if "successfully" in data["response"]:
-                return True
-        return False
+        # Return the json data no matter what for now because we just want to show the json object data
+        # in the response after whatever login scenario occurred. Later on will have conditions for true and false
+        return data
