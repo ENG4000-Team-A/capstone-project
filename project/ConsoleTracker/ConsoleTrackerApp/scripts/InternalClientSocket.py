@@ -22,4 +22,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print("Sent:", msg, username)
     data = s.recv(1024)
     data = json.loads(data.decode())
-    print("Received:", data["response"])
+    if data["usernameExists"] and data["validPassword"]:
+        print("Login Success")
+    else:
+        print("Login Failed")
+

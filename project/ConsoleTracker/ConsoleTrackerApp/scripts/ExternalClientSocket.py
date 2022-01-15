@@ -29,10 +29,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             data = json.loads(data.decode())
             if data["username"] in user_db:  # Check if username exists
                 if user_db[data["username"]] == data["password"]:  # Is password correct?
-                    data["response"] = data["username"] + " logged in successfully. Here is your authentication " \
-                                                          "code " + id_generator()
+                    data["usernameExists"] = True
+                    data["validPassword"] = True
+                    data["firstName"] = "Chris"
+                    data["lastName"] = "Smith"
+                    data["phoneNumber"] = 6475128443
+                    data["timeRemaining"] = 5.344
+                    data["authToken"] = "SECRET_KEY_TBA"
                 else:  # Password is incorrect
-                    data["response"] = "Password entered was incorrect for " + data["username"] + ". Please try again"
+                    data["usernameExists"] = True
+                    data["validPassword"] = False
             else:  # Username does not exist
-                data["response"] = "Username " + data["username"] + " doesnt exist. Please try again"
+                data["usernameExists"] = False
+                data["validPassword"] = False
             s.sendall(json.dumps(data).encode())
+
