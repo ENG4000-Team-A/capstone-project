@@ -28,4 +28,4 @@ urlpatterns = [
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # runs the time checking background task at startup
-tasks.main()
+tasks.start_query_daemon()
