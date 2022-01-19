@@ -5,6 +5,7 @@ from .forms import NameForm
 from django.views.generic.list import ListView
 from .models import Machine, User, User_uses_machine
 import datetime
+from .tasks import switch_on, switch_off
 
 
 # Create your views here.
@@ -14,7 +15,7 @@ def timer(request, id):
     user = User.objects.get(id=1)
     # set variables
     user_uses_machine = None
-    epochTime = 0;
+    epochTime = 0
     # Enter the countdown only if the machine is active
     username = "Not In Use"
     if machine.active:
@@ -38,6 +39,11 @@ def time_manager(request, id):
         if not machine.active:
             # if the machine is not active add the user and the machine to the relationship model
             User_uses_machine.objects.create(user=user, machine=machine)
+            # set users timebalance to 0 
+            user.time = 0
+            user.save()
+            # turns on the switch
+            switch_on(machine.ip)           
         # redirect to timer countdown page
         return HttpResponseRedirect('/timer/' + str(id))
     else:
