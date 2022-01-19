@@ -1,3 +1,24 @@
 .machinecard__container {
     border:1px solid green;
 }
+
+/* 
+Introduce Spacing Between Each Cards! 
+Untested! 
+*/
+div.machinecard__container {
+    padding-top: 25px;
+    padding-right: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
+}
+
+/* 
+Center the button in cards 
+Unoptimal since it could introduce strange behaviour. It works at the moment regardless 
+*/
+div.card__actions {
+    margin-left: 25%;
+    margin-right: 25%;
+    
+}
