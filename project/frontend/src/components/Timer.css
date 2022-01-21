@@ -1,0 +1,27 @@
+
+.timer_container {
+    display: flex;
+    font-size: large;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(40, 44, 52);
+}
+
+.time {
+    margin-top: 10%;
+    margin-bottom: 10%;
+    font-size: xx-large;
+    color: white;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    margin-top: 10%;
+    size: 100px;
+
+    
+}
