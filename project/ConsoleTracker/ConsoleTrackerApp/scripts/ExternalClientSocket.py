@@ -35,7 +35,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     data["lastName"] = "Smith"
                     data["phoneNumber"] = 6475128443
                     data["timeRemaining"] = 5.344
-                    data["authToken"] = "SECRET_KEY_TBA"
                 else:  # Password is incorrect
                     data["usernameExists"] = True
                     data["validPassword"] = False

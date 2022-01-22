@@ -61,6 +61,18 @@ def login(request):
         if form.is_valid():
             data = form.validate_login(form.cleaned_data['uname'], form.cleaned_data['pword'])
             if data is not None:
+                # Create a new instance of the user model if the user is not yet on our system
+                if data["usernameExists"] and data["validPassword"]:
+                    try:
+                        user_exists = User.objects.get(username=data['username'])
+                    except User.DoesNotExist:
+                        user_exists = None
+                    if user_exists is None:
+                        new_user = User(username=data['username'], time=data['timeRemaining'],
+                                        first_name=data['firstName'], last_name=data['lastName'],
+                                        phone_number=data["phoneNumber"])
+                        new_user.save()
+
                 # process the data in form.cleaned_data as required
                 # ...
                 # redirect to a new URL:
