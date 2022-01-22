@@ -42,7 +42,9 @@ def time_manager(request, id):
             # set users timebalance to 0 
             user.time = 0
             user.save()
-            # turns on the switch
+            # turns on the switch & set machine to active
+            machine.active = True
+            machine.save()
             switch_on(machine.ip)           
         # redirect to timer countdown page
         return HttpResponseRedirect('/timer/' + str(id))
