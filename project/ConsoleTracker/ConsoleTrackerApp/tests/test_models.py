@@ -119,20 +119,32 @@ class TestMachine(TestCase):
 
 class TestUser(TestCase):
     def setUp(self):
-        User.objects.create(name="John1", time=0)
-        User.objects.create(name="John2", time=1)
-        User.objects.create(name="John3", time=5000)
-        User.objects.create(name="John4", time=sys.maxsize)
-        User.objects.create(name="John5", time=sys.maxsize - 1)
+        User.objects.create(username="John1", time=0, first_name="John",
+                            last_name="Doe", phone_number="123-456-7890")
+        User.objects.create(username="John2", time=1, first_name="John",
+                            last_name="Doe", phone_number="123-456-7890")
+        User.objects.create(username="John3", time=5000, first_name="John",
+                            last_name="Doe", phone_number="123-456-7890")
+        User.objects.create(username="John4", time=sys.maxsize, first_name="John",
+                            last_name="Doe", phone_number="123-456-7890")
+        User.objects.create(username="John5", time=sys.maxsize - 1, first_name="John",
+                            last_name="Doe", phone_number="123-456-7890")
 
     def test_equivalence_values(self):
-        names = ["John1", "John2", "John3", "John4", "John5"]
+        usernames = ["John1", "John2", "John3", "John4", "John5"]
+        first_names = ["John", "John", "John", "John", "John"]
+        last_names = ["Doe", "Doe", "Doe", "Doe", "Doe"]
         times = [0, 1, 5000, sys.maxsize, sys.maxsize - 1]
+        phone_numbers = ["123-456-7890", "123-456-7890", "123-456-7890", "123-456-7890", "123-456-7890"]
 
         users = User.objects.all()
         for count, user in enumerate(users):
-            self.assertEqual(user.name, names[count])
+            self.assertEqual(user.username, usernames[count])
+            self.assertEqual(user.first_name, first_names[count])
+            self.assertEqual(user.last_name, last_names[count])
             self.assertEqual(user.time, times[count])
+            self.assertEqual(user.phone_number, phone_numbers[count])
+
 
         # Reset Objects
         User.objects.all().delete()
@@ -140,8 +152,11 @@ class TestUser(TestCase):
 
         # Assert Default Values
         obj = User.objects.create()
-        self.assertEqual(obj.name, "")
+        self.assertEqual(obj.username, "")
+        self.assertEqual(obj.first_name, "")
+        self.assertEqual(obj.last_name, "")
         self.assertEqual(obj.time, 0)
+        self.assertEqual(obj.phone_number, "")
 
 
 '''
@@ -168,16 +183,23 @@ class TestUserUsesMachine(TestCase):
         now = datetime.datetime.now(pytz.UTC)
 
         machine1 = Machine.objects.create(name="Eric", active=True, ip="127.0.0.1")
-        user1 = User.objects.create(name="John1", time=5000)
+        user1 = User.objects.create(username="John1", time=5000, first_name="John",
+                                    last_name="Doe", phone_number="123-456-7890")
         User_uses_machine.objects.create(user=user1, machine=machine1, expired=True)
 
         machine2 = Machine.objects.create(name="Alex", active=True, ip="137.0.0.1")
-        user2 = User.objects.create(name="John2", time=5000)
-        User_uses_machine.objects.create(user=user2, machine=machine2, start_time=datetime.datetime(2011, 8, 15, 8, 15, 12, 0, pytz.UTC), expired=False)
+        user2 = User.objects.create(username="John2", time=5000, first_name="John",
+                                    last_name="Doe", phone_number="123-456-7890")
+        User_uses_machine.objects.create(user=user2, machine=machine2,
+                                         start_time=datetime.datetime(2011, 8, 15, 8, 15, 12, 0, pytz.UTC),
+                                         expired=False)
 
         machine3 = Machine.objects.create(name="John", active=True, ip="117.0.0.1")
-        user3 = User.objects.create(name="John3", time=5000)
-        User_uses_machine.objects.create(user=user3, machine=machine3, end_time=datetime.datetime(2011, 8, 15, 8, 15, 12, 0, pytz.UTC), expired=True)
+        user3 = User.objects.create(username="John3", time=5000, first_name="John",
+                                    last_name="Doe", phone_number="123-456-7890")
+        User_uses_machine.objects.create(user=user3, machine=machine3,
+                                         end_time=datetime.datetime(2011, 8, 15, 8, 15, 12, 0, pytz.UTC),
+                                         expired=True)
 
     def test_equivalence_values(self):
         now = datetime.datetime.now(pytz.UTC)
@@ -202,7 +224,7 @@ class TestUserUsesMachine(TestCase):
         User_uses_machines = User_uses_machine.objects.all()
         for count, user_uses_machine in enumerate(User_uses_machines):
             self.assertEqual(user_uses_machine.machine.ip, machine_ips[count])
-            self.assertEqual(user_uses_machine.user.name, user_names[count])
+            self.assertEqual(user_uses_machine.user.username, user_names[count])
 
         # Reset Objects
         User_uses_machine.objects.all().delete()
