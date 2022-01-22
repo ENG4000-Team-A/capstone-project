@@ -44,16 +44,25 @@ class Machine(models.Model):
 
 '''
     User (Model)
-        - name = text field
+        - username = text field
+            - default = ''
+        - first_name = text field
+            - default = ''
+        - last_name = text field
             - default = ''
         - time = integer field
             - default = 0
+        - phone_number = char field
+            - default = ''
 '''
 
 
 class User(models.Model):
-    name = models.TextField(blank=True, null=False, unique=True)
+    username = models.TextField(blank=True, null=False, unique=True)
+    first_name = models.TextField(blank=True, null=False)
+    last_name = models.TextField(blank=True, null=False)
     time = models.PositiveIntegerField(default=0, null=False)
+    phone_number = models.CharField(max_length=12, blank=True, null=False)
 
 
 '''
