@@ -23,8 +23,8 @@ def timer(request, id):
         user_uses_machine = User_uses_machine.objects.get(machine=machine, expired=False)
         user = user_uses_machine.user
         epochTime = user_uses_machine.end_time.timestamp()
-        username = user.name
     return render(request, "countdown.html",
+        username = user.username
                   {"machine": machine, "username": username, "user_uses_machine": user_uses_machine,
                    "epochTime": epochTime})
 
