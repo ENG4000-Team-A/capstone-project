@@ -1,11 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-
 from .forms import NameForm
 from django.views.generic.list import ListView
 from .models import Machine, User, User_uses_machine
 import datetime
-from .tasks import switch_on, switch_off
+from .tasks import switch_on, switch_off, stop_timer
 
 
 # Create your views here.
@@ -23,10 +22,16 @@ def timer(request, id):
         user_uses_machine = User_uses_machine.objects.get(machine=machine, expired=False)
         user = user_uses_machine.user
         epochTime = user_uses_machine.end_time.timestamp()
-    return render(request, "countdown.html",
         username = user.username
-                  {"machine": machine, "username": username, "user_uses_machine": user_uses_machine,
-                   "epochTime": epochTime})
+    if request.method == "POST":
+        # post request from button pressed
+        stop_timer(user_uses_machine)
+        # redirects to same page only to show user the change to timer
+        return HttpResponseRedirect('/timer/' + str(id))
+    else:        
+        return render(request, "countdown.html",
+                    {"machine": machine, "username": username, "user_uses_machine": user_uses_machine,
+                    "epochTime": epochTime})
 
 
 def time_manager(request, id):
