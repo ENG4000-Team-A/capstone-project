@@ -43,7 +43,7 @@ def query_time():
             query.expired = True
             query.save()
             switch_off(query.machine.ip)
-            print(query.user.name + ' on ' + query.machine.name + ' ended at '
+            print(query.user.username + ' on ' + query.machine.name + ' ended at '
                   + query.end_time.strftime("%m/%d/%Y, %H:%M:%S") + ', set to inactive')
         # minimum 1 second between loops, but usually 1.01s on my machine.
         # may need to change value to guarantee 1s between loops
