@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-
 from .forms import NameForm
 from django.views.generic.list import ListView
 from .models import Machine, User, User_uses_machine
 import datetime
+from .tasks import switch_on, switch_off, stop_timer
 
 
 # Create your views here.
@@ -14,7 +14,7 @@ def timer(request, id):
     user = User.objects.get(id=1)
     # set variables
     user_uses_machine = None
-    epochTime = 0;
+    epochTime = 0
     # Enter the countdown only if the machine is active
     username = "Not In Use"
     if machine.active:
@@ -22,10 +22,16 @@ def timer(request, id):
         user_uses_machine = User_uses_machine.objects.get(machine=machine, expired=False)
         user = user_uses_machine.user
         epochTime = user_uses_machine.end_time.timestamp()
-        username = user.name
-    return render(request, "countdown.html",
-                  {"machine": machine, "username": username, "user_uses_machine": user_uses_machine,
-                   "epochTime": epochTime})
+        username = user.username
+    if request.method == "POST":
+        # post request from button pressed
+        stop_timer(user_uses_machine)
+        # redirects to same page only to show user the change to timer
+        return HttpResponseRedirect('/timer/' + str(id))
+    else:        
+        return render(request, "countdown.html",
+                    {"machine": machine, "username": username, "user_uses_machine": user_uses_machine,
+                    "epochTime": epochTime})
 
 
 def time_manager(request, id):
@@ -38,6 +44,13 @@ def time_manager(request, id):
         if not machine.active:
             # if the machine is not active add the user and the machine to the relationship model
             User_uses_machine.objects.create(user=user, machine=machine)
+            # set users timebalance to 0 
+            user.time = 0
+            user.save()
+            # turns on the switch & set machine to active
+            machine.active = True
+            machine.save()
+            switch_on(machine.ip)           
         # redirect to timer countdown page
         return HttpResponseRedirect('/timer/' + str(id))
     else:
@@ -55,6 +68,18 @@ def login(request):
         if form.is_valid():
             data = form.validate_login(form.cleaned_data['uname'], form.cleaned_data['pword'])
             if data is not None:
+                # Create a new instance of the user model if the user is not yet on our system
+                if data["usernameExists"] and data["validPassword"]:
+                    try:
+                        user_exists = User.objects.get(username=data['username'])
+                    except User.DoesNotExist:
+                        user_exists = None
+                    if user_exists is None:
+                        new_user = User(username=data['username'], time=data['timeRemaining'],
+                                        first_name=data['firstName'], last_name=data['lastName'],
+                                        phone_number=data["phoneNumber"])
+                        new_user.save()
+
                 # process the data in form.cleaned_data as required
                 # ...
                 # redirect to a new URL:
