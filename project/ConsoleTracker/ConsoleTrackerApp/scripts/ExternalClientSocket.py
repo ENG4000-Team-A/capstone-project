@@ -20,6 +20,16 @@ user_db = {
     "daven634": "56509jeanHHH"
 }
 
+
+#represents the time remining in a users account
+time_db = {
+    "chris354": 300,
+    "eric123": 450,
+    "daven634": 60
+}
+
+
+#TODO: refactor to seperate the different messages recieved
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     while True:
@@ -27,19 +37,25 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         if data:
             print(data)
             data = json.loads(data.decode())
-            if data["username"] in user_db:  # Check if username exists
-                if user_db[data["username"]] == data["password"]:  # Is password correct?
-                    data["usernameExists"] = True
-                    data["validPassword"] = True
-                    data["firstName"] = "Chris"
-                    data["lastName"] = "Smith"
-                    data["phoneNumber"] = 6475128443
-                    data["timeRemaining"] = 5.344
-                else:  # Password is incorrect
-                    data["usernameExists"] = True
+            #seperate the message types
+            if data["msg"] == "timer_update" : 
+                if data["username"] in time_db:
+                    time_db[data["username"]] -= data["time"]
+                    print(time_db)
+            else :
+                if data["username"] in user_db:  # Check if username exists
+                    if user_db[data["username"]] == data["password"]:  # Is password correct?
+                        data["usernameExists"] = True
+                        data["validPassword"] = True
+                        data["firstName"] = "Chris"
+                        data["lastName"] = "Smith"
+                        data["phoneNumber"] = 6475128443
+                        data["timeRemaining"] = 5.344
+                    else:  # Password is incorrect
+                        data["usernameExists"] = True
+                        data["validPassword"] = False
+                else:  # Username does not exist
+                    data["usernameExists"] = False
                     data["validPassword"] = False
-            else:  # Username does not exist
-                data["usernameExists"] = False
-                data["validPassword"] = False
             s.sendall(json.dumps(data).encode())
 
