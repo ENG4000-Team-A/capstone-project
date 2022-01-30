@@ -1,9 +1,13 @@
+from tracemalloc import start
 from .models import Machine, User_uses_machine
 from .scripts.SwitchScript import ConsolSwitch
+from .InternalSocketConnect import InternalSocket
 from threading import Thread
 from django.utils import timezone
 import asyncio
+import datetime
 import time
+import pytz
 from kasa import Discover
 import sys
 
@@ -27,6 +31,50 @@ def switch_on(ip):
 	t = Thread(target=turn_on_switch_help, args=(ip,))
 	t.start()
 
+# runs the update time function 
+def update_time(socket, username, time):
+    return socket.update_time(username, time)
+
+#thread to update the time balance of the user
+def update_time_thread():
+    #represents the seconds on the clock we will update time
+    check_seconds = [00, 15, 30, 45]
+    interval = 15
+    #create the socket that connects to ExternalSocket
+    socket = InternalSocket()
+
+    while True:
+        #The current system time and the seconds of the current clock
+        curr_time = datetime.datetime.now().replace(tzinfo=pytz.UTC)
+        clock_second = int(curr_time.strftime('%S'))
+
+        #print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
+        
+        #if the current clock second is equal to one of the interval times update users' time
+        if clock_second in check_seconds :
+            #queries for all active machines
+            active_machines = User_uses_machine.objects.filter(
+                expired = False
+                )
+            #print(active_machines)
+            #loop through each active machine
+            for machine in active_machines:
+                #determine the seconds between the start of the machine and the current time to figure out if the machine
+                # started less than the interval
+                start_dif = int((curr_time - machine.start_time).total_seconds())
+                #print(f"{curr_time} {machine.start_time}")
+                #print(f"{start_dif}")
+                
+                if (start_dif < interval) :
+                    #If the machine started less than interval update time by difference
+                    update_time(socket, machine.user.username, start_dif)
+                    print(f"updating {machine.user.username} time by {start_dif} seconds")
+                else :
+                    #else update by interval
+                    update_time(socket, machine.user.username, interval)
+                    print(f"updating {machine.user.username} time by {interval} seconds")
+
+        time.sleep(1)
 
 def query_time():
     i = 0
@@ -82,3 +130,7 @@ def start_query_daemon():
     t = Thread(target=query_time)
     t.daemon = True
     t.start()
+
+    t2 = Thread(target=update_time_thread)
+    t2.daemon = True
+    t2.start()
