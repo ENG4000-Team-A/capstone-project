@@ -13,29 +13,65 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import {useState} from 'react' 
 
+const API_URL = "http://127.0.0.1:8000";
 
 
 function Copyright(props) {
-    return (
-      <Typography variant="body2" color="text.secondary" align="center" {...props}>
-        {'Copyright © '}
-        <Link color="inherit" href="#">
-          ConsoleTracker
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-      </Typography>
-    );
-  }
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="#">
+        ConsoleTracker
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
-  const theme = createTheme({
-    palette: {
-    mode : 'dark'
-    },
-  });
+const theme = createTheme({
+  palette: {
+    mode: 'dark'
+  },
+});
 
 export default function SignIn() {
+
+  const [username, setName] = useState('');
+  const [password, setPass] = useState('');
+  let navigate = useNavigate();
+
+  const handleLogin = () => {
+    console.log("logged")
+    axios.post(API_URL + "/login/", {
+      uname: username,
+      pword: password
+    }).then(function (response) { // logged in
+        alert(response.data.status);
+        console.log(response.data.status);
+        navigate("/home");
+        window.location.reload();
+      }).catch(function (error) { // invalid login
+        console.log(error)
+        alert(error.response.data);
+      });
+  }
+
+  const handleNameChange = (e) => {
+    setName(e.target.value)
+    console.log("updated name");
+
+}
+
+const handlePassChange = (e) => {
+    setPass(e.target.value);
+    console.log("updated pass");
+}
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -47,7 +83,7 @@ export default function SignIn() {
   };
 
   return (
-    <ThemeProvider theme={theme}> 
+    <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -70,10 +106,12 @@ export default function SignIn() {
               required
               fullWidth
               id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              label="Username"
+              name="username"
+              autoComplete="username"
               autoFocus
+              onChange={handleNameChange}
+
             />
             <TextField
               margin="normal"
@@ -84,18 +122,19 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={handlePassChange}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            <Button  
+            <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               onClick={() => {
-                alert('clicked');   // Add click functionality here
+                handleLogin()   // Add click functionality here
               }}
             >
               Sign In
