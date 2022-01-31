@@ -45,7 +45,7 @@ def update_time_thread():
 
     while True:
         #The current system time and the seconds of the current clock
-        curr_time = datetime.datetime.now().replace(tzinfo=pytz.UTC)
+        curr_time = timezone.now()
         clock_second = int(curr_time.strftime('%S'))
 
         #print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
