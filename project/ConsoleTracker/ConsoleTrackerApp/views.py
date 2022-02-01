@@ -5,7 +5,10 @@ from django.views.generic.list import ListView
 from .models import Machine, User, User_uses_machine
 import datetime
 from .tasks import switch_on, switch_off, stop_timer
-
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from rest_framework.response import Response
+import json
 
 # Create your views here.
 
@@ -59,17 +62,24 @@ def time_manager(request, id):
     return render(request, "time_manager.html", {"machine": machine, "user": user, "timeLeft": timeLeft})
 
 
+@csrf_exempt 
 def login(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = NameForm(request.POST)
+
+        body = json.loads(request.body)
+        #username = body['uname']
+        #password = body['pword']
+        form = NameForm(body)
+        
         # check whether it's valid:
         if form.is_valid():
             data = form.validate_login(form.cleaned_data['uname'], form.cleaned_data['pword'])
+            
             if data is not None:
                 # Create a new instance of the user model if the user is not yet on our system
-                if data["usernameExists"] and data["validPassword"]:
+                if data["usernameExists"] and data["validPassword"]:  
                     try:
                         user_exists = User.objects.get(username=data['username'])
                     except User.DoesNotExist:
@@ -79,17 +89,24 @@ def login(request):
                                         first_name=data['firstName'], last_name=data['lastName'],
                                         phone_number=data["phoneNumber"])
                         new_user.save()
+                    return JsonResponse({"status": 'Successful Login',
+                    })
+                else:
+                    return JsonResponse({"status": 'Credentials not valid'})
 
                 # process the data in form.cleaned_data as required
                 # ...
                 # redirect to a new URL:
                 # For now it will redirect to the same page after attempted login
                 # but now just show the json response for us to observe
-                return render(request, 'login.html', {'form': form, 'data': data})
+
+        else:
+            return JsonResponse({"status": 'Fail: form not valid'}) 
+                
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NameForm()
-    return render(request, "login.html", {'form': form})
+    return JsonResponse({"status": 'Fail: Not a POST request'}) 
 
 
 class machines(ListView):
