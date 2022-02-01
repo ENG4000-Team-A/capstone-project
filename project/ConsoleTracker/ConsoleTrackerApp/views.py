@@ -68,7 +68,7 @@ def login(request):
         # create a form instance and populate it with data from the request:
 
         body = json.loads(request.body)
-        username = body['uname']
+        #username = body['uname']
         #password = body['pword']
         form = NameForm(body)
         
