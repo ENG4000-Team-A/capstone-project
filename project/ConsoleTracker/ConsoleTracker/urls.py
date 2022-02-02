@@ -24,7 +24,7 @@ urlpatterns = [
                   path('time_manager/<int:id>', views.time_manager, name='time_manager'),
                   path('timer/<int:id>', views.timer, name='timer'),
                   path('login/', views.login, name='login'),
-                  path('machines/', views.machines.as_view(), name='machines'),
+                  path('machines/', views.getMachines, name='machines'),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # runs the time checking background task at startup

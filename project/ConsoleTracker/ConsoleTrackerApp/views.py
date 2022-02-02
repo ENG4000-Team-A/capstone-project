@@ -5,9 +5,10 @@ from django.views.generic.list import ListView
 from .models import Machine, User, User_uses_machine
 import datetime
 from .tasks import switch_on, switch_off, stop_timer
+from django.forms.models import model_to_dict
+
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from rest_framework.response import Response
 import json
 
 # Create your views here.
@@ -107,6 +108,12 @@ def login(request):
     else:
         form = NameForm()
     return JsonResponse({"status": 'Fail: Not a POST request'}) 
+
+def getMachines(request):
+    mid = request.GET.get('id', None)
+    if mid is not None:
+        return JsonResponse({'data':model_to_dict(Machine.objects.get(pk=mid))})
+    return JsonResponse({'data': list(Machine.objects.all().values())})
 
 
 class machines(ListView):

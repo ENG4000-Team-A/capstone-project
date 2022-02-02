@@ -21,48 +21,40 @@ import ps5_logo from "../image/PS5_logo_placeholder.png";
 import xboxSeriesXLogo from "../image/XBox_Series_placeholder.png"; // xbox version
 import error from "../image/Error.png";
 
-function Machine_Card_Selected() {
-  alert("Clicked!");
-}
+import { useNavigate } from "react-router-dom";
+
+
+
 
 function returnConsoleImage (console_name) {
   switch(console_name) {
-    case "PS5": return ps5_logo;
-    case "Xbox": return xboxSeriesXLogo;
+    case "PS4": return ps5_logo;
+    case "Xbox 1": return xboxSeriesXLogo;
     default: return error;
   }
 }
 
-function MachineCard() {
+function MachineCard({machineId,name,status,machineType,...props}) {
+ 
+  let navigate = useNavigate();
 
-  // Dummy JSON object
-  var consoleInformation = {
-    "name": "PS5",
-    "status": "Available",
-    "image": returnConsoleImage("PS5"),
-    "alt_text": "PS5 logo",
-    "button_prompt": "Available"
-  };
-
+  function Machine_Card_Selected() {
+    navigate(`/machines/${machineId}`);
+  }
 
   return (
+
     // Part Division
     <div className="machinecard__container">
-      Machine Machine Card for {consoleInformation.name}
-      <Card sx={{ maxWidth: 250 }}>
+       {name}
+      <Card sx={{ maxWidth: 300 }}>
         <CardMedia
           component="img"
           height="100"
-          image={consoleInformation.image}
-          alt={consoleInformation.alt_text}
+          image={returnConsoleImage(machineType)}
+          alt="logo"
         />
-
-        {/* Show Text Content Here */}
-        {/* <CardContent>
-          <Typography variant="body2" color="text.secondary" align="center">
-            {consoleInformation.status}
-          </Typography>
-        </CardContent> */}
+        Status: {String(status)}
 
         <div className="card__actions">
           <CardActions>
@@ -72,8 +64,9 @@ function MachineCard() {
                 onClick={() => {
                   Machine_Card_Selected();
                 }}
+                disabled={status}
               >
-                {consoleInformation.button_prompt}
+                Available
               </Button>
               
           </CardActions>

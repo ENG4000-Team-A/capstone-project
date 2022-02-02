@@ -18,8 +18,7 @@ function App() {
         <Routes>
           <Route path="/login" caseSensitive={false} element={<Login />} />
           <Route path="/" caseSensitive={false} element={<Overview />} />
-          <Route path="/machine" caseSensitive={false} element={<MachineInfo />} />
-          <Route path="/machine_card" caseSensitive={false} element={<MachineCard />} />
+          <Route path="/machines/:id" caseSensitive={false} element={<MachineInfo />} />
           <Route path="/timer" caseSensitive={false} element={<Timer />} />
         </Routes>
       </div>
