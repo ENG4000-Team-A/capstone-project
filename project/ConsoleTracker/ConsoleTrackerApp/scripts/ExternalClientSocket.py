@@ -23,9 +23,9 @@ user_db = {
 
 #represents the time remining in a users account
 time_db = {
-    "chris354": 90,
-    "eric123": 100,
-    "daven634": 30
+    "chris354": 300,
+    "eric123": 450,
+    "daven634": 60
 }
 
 
