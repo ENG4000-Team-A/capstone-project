@@ -39,7 +39,7 @@ const theme = createTheme({
   },
 });
 
-export default function SignIn() {
+export default function Login() {
 
   const [username, setName] = useState('');
   const [password, setPass] = useState('');
@@ -53,7 +53,12 @@ export default function SignIn() {
     }).then(function (response) { // logged in
         alert(response.data.status);
         console.log(response.data.status);
-        navigate("/home");
+        if (response.data.status === "Successful Login")
+        {
+          localStorage.setItem('loginCookie', "fiajoesifs939fjj");
+          localStorage.setItem('user', username);
+          navigate("/");
+        }
         window.location.reload();
       }).catch(function (error) { // invalid login
         console.log(error)

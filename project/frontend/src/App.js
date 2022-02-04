@@ -1,9 +1,10 @@
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import Login from './components/Login.js';
 import Overview from './components/Overview.js';
 import MachineInfo from './components/MachineInfo.js';
 import TopMenu from './components/TopMenu.js';
-import MachineCard from './components/MachineCard.js';
+import Home from './components/Home.js';
 import Timer from './components/Timer.js';
 import {
   BrowserRouter as Router,
@@ -11,15 +12,32 @@ import {
   Route} from "react-router-dom";
 
 function App() {
+
+  const [auth, setAuth] = useState(false);
+
+  useEffect(() => {
+    const cookieKey = localStorage.getItem("loginCookie");
+    if (cookieKey)
+    {
+      setAuth(true);
+    }
+    else
+    {
+      setAuth(false);
+    }
+}, []);
+
+
   return (
     <Router>
       <div>
-        <TopMenu/>
+        <TopMenu auth={auth}/>
         <Routes>
+          <Route path="/" caseSensitive={false} element={<Home auth={auth} />} />
           <Route path="/login" caseSensitive={false} element={<Login />} />
-          <Route path="/" caseSensitive={false} element={<Overview />} />
-          <Route path="/machines/:id" caseSensitive={false} element={<MachineInfo />} />
-          <Route path="/timer" caseSensitive={false} element={<Timer />} />
+          <Route path="/machines" caseSensitive={false} element={<Overview auth={auth}/>} />
+          <Route path="/machines/:id" caseSensitive={false} element={<MachineInfo auth={auth}/>} />
+          <Route path="/timer" caseSensitive={false} element={<Timer auth={auth}/>} />
         </Routes>
       </div>
     </Router>
