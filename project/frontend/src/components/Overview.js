@@ -3,7 +3,7 @@ import './Overview.css'
 import MachineCard from './MachineCard.js';
 import axios from 'axios';
 
-function Overview() {
+function Overview({auth}) {
 
     const [machines, setMachine] = useState([]);
 
@@ -21,9 +21,14 @@ function Overview() {
 
     return (
         <div className='overview__container'>
-            { machines.map((machine) => (
+            {auth &&
+             machines.map((machine) => (
                 <MachineCard machineId={machine.id} name={machine.name} status={machine.active} machineType={machine.machine_type} ></MachineCard>
-            )) }
+            )) 
+            }
+            {!auth &&
+                <div>Please login</div>
+            }
         </div>
     )
 }

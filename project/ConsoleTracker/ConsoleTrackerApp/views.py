@@ -115,6 +115,17 @@ def getMachines(request):
         return JsonResponse({'data':model_to_dict(Machine.objects.get(pk=mid))})
     return JsonResponse({'data': list(Machine.objects.all().values())})
 
+def getUsers(request):
+    uname = request.GET.get('uname', None)
+    if uname is not None:
+        user = None
+        try:
+            user = model_to_dict(User.objects.get(username=uname))
+        except Exception as e:
+            user = {}
+        return JsonResponse({'data':user})
+    return JsonResponse({'data': list(User.objects.all().values())})
+
 
 class machines(ListView):
     model = Machine

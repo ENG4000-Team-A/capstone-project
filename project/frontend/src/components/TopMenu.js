@@ -1,56 +1,47 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
+
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
 import { useNavigate } from 'react-router-dom';
  
+import {Link} from "react-router-dom";
 
-function TopMenu() {
-    const [auth, setAuth] = useState(true);
-    const [anchorEl, setAnchorEl] = useState(null);
 
-    const pages = ['Home', 'Game Stations', 'Profile'];
+function TopMenu({auth}) {
 
+    const [anchorEl, setAnchorEl] = useState(true);
+    const open = Boolean(anchorEl);
 
     const navigate = useNavigate();
-  
-    const handleChange = (event) => {
-      setAuth(event.target.checked);
+    const pages = [
+      {name:'Home', to:'/'}, 
+      {name:'Game Stations', to:'/machines'}, 
+      {name:'My Timer', to:'/timer'}
+    ];
+
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
     };
-  
     const handleClose = () => {
       setAnchorEl(null);
     };
 
     const handleLogout = () => {
-        setAuth(false);
-        navigate('/login');
+        localStorage.removeItem("loginCookie");
+        navigate('/');
+        window.location.reload();
     };
 
+
+
     return (
-    <Box sx={{ flexGrow: 1 }}>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={auth}
-              onChange={handleChange}
-              aria-label="login switch"
-            />
-          }
-          label={auth ? 'Logout' : 'Login'}
-        />
-      </FormGroup>
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -66,14 +57,18 @@ function TopMenu() {
             ConsoleTracker
           </Typography>
           { auth && pages.map((page) => (
-                <MenuItem key={page} onClick={handleClose}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
+            <Link to={page.to} style={{ textDecoration: 'none' }}>
+              <MenuItem key={page.name} onClick={handleClose}>
+                  <Typography textAlign="center">{page.name}</Typography>
+              </MenuItem>
+            </Link>
               ))}
           { !auth && 
-          <MenuItem key='login' onClick={handleLogout}>
-            <Typography textAlign="center">Login</Typography>
-          </MenuItem>   
+          <Link to="/login" style={{ textDecoration: 'none' }}>
+            <MenuItem key='login'>
+                <Typography textAlign="center">Login</Typography>
+            </MenuItem>   
+          </Link>
           }
 
           {auth && (
@@ -83,7 +78,7 @@ function TopMenu() {
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
-                onClick={handleClose}
+                onClick={handleClick}
                 color="inherit"
               >
                 <AccountCircle />
@@ -100,8 +95,9 @@ function TopMenu() {
                   vertical: 'top',
                   horizontal: 'right',
                 }}
-                open={Boolean(anchorEl)}
+                open={open}
                 onClose={handleClose}
+                onClick={handleClose}
               >
                 <MenuItem onClick={handleClose}>My account</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
@@ -110,7 +106,6 @@ function TopMenu() {
           )}
         </Toolbar>
       </AppBar>
-    </Box>
     )
 }
 
