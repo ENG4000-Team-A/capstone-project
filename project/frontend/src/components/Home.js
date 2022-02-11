@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import './Home.css'
+import './rows.css'
 
 function Home({auth}) {
 
@@ -29,18 +31,51 @@ function Home({auth}) {
 }, []);
 
 
-  return <div>
+  return <main>
       {auth &&
-        <div>Hello {userInfo.first_name} {userInfo.last_name}! <br/> Phone No: {userInfo.phone_number}
-        <br/> Time: {userInfo.time} minutes
+        <div class="main-content-container">
+          <div class='section-container profile'>
+            <div class="wrap">
+              <div class="content">
+                <div class="row-12">
+                  <div class="col-sm-12 col-4 profile-pic">
+                    <img src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" width="100%"/>
+                  </div>
+                  <div class="col-sm-12 col-8">
+                    <h4>{userInfo.first_name} {userInfo.last_name}</h4>
+                    <h5 class="sub">{userInfo.username} | {userInfo.phone_number} </h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class='section-container profile-time'>
+            <div class="wrap">
+              <div class="content">
+                <div class="row-12">
+                  <div class="col-sm-12 col-6">
+                    <div class="card dark">
+                      <h3 class="light-header"> Time Remaining </h3>
+                      <h3> {userInfo.time} minutes </h3>
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-6">
+                    <div class="card dark">
+                      <h3 class="light-header"> Current Console </h3>
+                      <h3> Machine xyz </h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        
       }
       {!auth &&
         <div>Please login</div>
       }
 
-  </div>;
+  </main>;
 }
 
 export default Home;
