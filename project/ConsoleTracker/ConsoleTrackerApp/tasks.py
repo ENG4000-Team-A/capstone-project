@@ -97,7 +97,6 @@ def query_time():
         update_time_thread(socket)
         # like an SQL SELECT where only looking for unexpired timers, from today,
         # with end_time before now
-        time-remaining-update
         update_expired_machines()
         if i >= SYNC_PERIOD:
             i = 0
@@ -112,7 +111,7 @@ def sync_switch_states():
     """
     Syncs smart switches to match the Machine states.
     """
-    # print("Checking switch states")
+    print("Checking switch states")
     devices = asyncio.run(Discover.discover()) # Scan for devices
     machines = Machine.objects.all() # Get machines
     for m in machines:
@@ -127,23 +126,10 @@ def sync_switch_states():
                     print("Powering on machine with ip: {ip}".format(ip=addr))
                 else:
                     print("State okay")
+                    
 
-
-def stop_timer(active_timer :User_uses_machine):
-	"""
-	Sets endtime of an active timer to now.
-	Sets users time to remaining timer value.
-	"""
-	new_endtime = timezone.now()
-	delta = active_timer.end_time - new_endtime
-	active_timer.end_time = new_endtime
-	active_timer.save()
-	active_timer.user.time = delta.total_seconds()
-	active_timer.user.save()
-
-
+# runs query_time in a background thread
 def start_query_daemon():
-    """runs query_time in a background thread"""
     if sys.version_info[0] == 3 and sys.version_info[1] >= 8 and sys.platform.startswith('win'): # windows bug https://github.com/encode/httpx/issues/914
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     t = Thread(target=query_time)

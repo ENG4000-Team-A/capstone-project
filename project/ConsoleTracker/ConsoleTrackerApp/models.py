@@ -37,10 +37,10 @@ class TimeStamp(models.Model):
 
 
 class Machine(models.Model):
-    name = models.CharField(max_length=50, blank=True, null=False)
+    name = models.TextField(blank=True, null=False)
     active = models.BooleanField(default=False)
     ip = models.GenericIPAddressField(default="127.0.0.1", null=False, unique=True)
-    machine_type = models.CharField(max_length=50, blank=True, null=False)
+
 
 '''
     User (Model)
