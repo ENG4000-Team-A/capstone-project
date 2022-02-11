@@ -1,0 +1,133 @@
+.row-12 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: -5px;
+}
+
+.row-12 > div {
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.row-12 .col-sm-1 {
+	float: left;
+	width: 8.33%;
+}
+
+.row-12 .col-sm-2 {
+	float: left;
+	width: 16.66%;
+}
+
+.row-12 .col-sm-3 {
+	float: left;
+	width: 25%;
+}
+
+.row-12 .col-sm-4 {
+	float: left;
+	width: 33.3%;
+}
+
+.row-12 .col-sm-5 {
+	float: left;
+	width: 41.66%;
+}
+
+.row-12 .col-sm-6 {
+	float: left;
+	width: 50%;
+}
+
+.row-12 .col-sm-7 {
+	float: left;
+	width: 58.33%;
+}
+
+.row-12 .col-sm-8 {
+	float: left;
+	width: 66.66%;
+}
+
+.row-12 .col-sm-9 {
+	float: left;
+	width: 75%;
+}
+
+.row-12 .col-sm-10 {
+	float: left;
+	width: 83.33%;
+}
+
+.row-12 .col-sm-11 {
+	float: left;
+	width: 91.66%;
+}
+
+.row-12 .col-sm-12 {
+	float: left;
+	width: 100%;
+}
+
+@media only screen and (min-width: 768px) {
+    .row-12 .col-1 {
+        float: left;
+        width: 8.33%;
+    }
+    
+    .row-12 .col-2 {
+        float: left;
+        width: 16.66%;
+    }
+    
+    .row-12 .col-3 {
+        float: left;
+        width: 25%;
+    }
+    
+    .row-12 .col-4 {
+        float: left;
+        width: 33.3%;
+    }
+    
+    .row-12 .col-5 {
+        float: left;
+        width: 41.66%;
+    }
+    
+    .row-12 .col-6 {
+        float: left;
+        width: 50%;
+    }
+    
+    .row-12 .col-7 {
+        float: left;
+        width: 58.33%;
+    }
+    
+    .row-12 .col-8 {
+        float: left;
+        width: 66.66%;
+    }
+    
+    .row-12 .col-9 {
+        float: left;
+        width: 75%;
+    }
+    
+    .row-12 .col-10 {
+        float: left;
+        width: 83.33%;
+    }
+    
+    .row-12 .col-11 {
+        float: left;
+        width: 91.66%;
+    }
+    
+    .row-12 .col-12 {
+        float: left;
+        width: 100%;
+    }
+}
