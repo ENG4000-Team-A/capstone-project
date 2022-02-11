@@ -55,7 +55,7 @@ useEffect(() => {
                 ))}
                 
                 {machine.map(machine => (
-                    <div key={machine.id}>
+                    <div key={machine.name}>
                        <p>
                             {"Machine Name: "}
                             {machine.name}
