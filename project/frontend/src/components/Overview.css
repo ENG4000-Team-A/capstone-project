@@ -1,4 +1,8 @@
 .overview__container {
     border:1px solid green;
+
+    /* Enables wrapping for the objects inside the container (mostly for Machine Cards) */
     display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }

@@ -47,7 +47,7 @@ function MachineCard({machineId,name,status,machineType,...props}) {
     // Part Division
     <div className="machinecard__container">
        {name}
-      <Card sx={{ maxWidth: 300 }}>
+      <Card sx={{ maxWidth: 500 }}>
         <CardMedia
           component="img"
           height="100"
