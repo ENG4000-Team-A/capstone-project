@@ -2,6 +2,7 @@ from tracemalloc import start
 from .models import Machine, User_uses_machine
 from .scripts.SwitchScript import ConsolSwitch
 from .InternalSocketConnect import InternalSocket
+from .notifications import sendSMS, NOTIF_TIMES
 from threading import Thread
 from django.utils import timezone
 import asyncio
@@ -95,6 +96,7 @@ def query_time():
 
     while True:
         update_time_thread(socket)
+        send_notifications()
         # like an SQL SELECT where only looking for unexpired timers, from today,
         # with end_time before now
         update_expired_machines()
@@ -141,6 +143,26 @@ def stop_timer(active_timer :User_uses_machine):
 	active_timer.user.save()
 
 
+def send_notifications():
+
+    active_machines = User_uses_machine.objects.filter(
+            expired=False
+            )
+    #loop through each active machine
+    for machine in active_machines:
+        #looks for valid format phone number without country calling code
+        if len(machine.user.phone_number) == 10:
+            # country code for Canada and US, will need proper way to get for other countries
+            country_code= "+1"
+            timer = int((machine.end_time - timezone.now()).total_seconds())
+            if timer in NOTIF_TIMES:
+                msg = str(int(timer / 60)) + " minutes remaining on " + machine.machine.name + "."
+                msg += '\nPlease use website for accurate timer.'
+                # print('sending sms')
+                t = Thread(target=sendSMS, args=(country_code + machine.user.phone_number, msg,))
+                t.setName('SMS')
+                t.start() 
+
 def start_query_daemon():
     """runs query_time in a background thread"""
     if sys.version_info[0] == 3 and sys.version_info[1] >= 8 and sys.platform.startswith('win'): # windows bug https://github.com/encode/httpx/issues/914
@@ -148,3 +170,5 @@ def start_query_daemon():
     t = Thread(target=query_time)
     t.daemon = True
     t.start()
+
+
