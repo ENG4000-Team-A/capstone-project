@@ -102,12 +102,12 @@ def query_time():
         update_expired_machines()
         if i >= SYNC_PERIOD:
             i = 0
-            sync_switch_states()
+            t= Thread(target=sync_switch_states)
+            t.start()
         i += 1
         # minimum 1 second between loops, but usually 1.01s on my machine.
         # may need to change value to guarantee 1s between loops
         time.sleep(1)
-
 
 def sync_switch_states():
     """
