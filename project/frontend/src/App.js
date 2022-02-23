@@ -6,6 +6,8 @@ import MachineInfo from './components/MachineInfo.js';
 import TopMenu from './components/TopMenu.js';
 import Home from './components/Home.js';
 import Timer from './components/Timer.js';
+import Codes from './components/QRCodes';
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -38,6 +40,7 @@ function App() {
           <Route path="/machines" caseSensitive={false} element={<Overview auth={auth}/>} />
           <Route path="/machines/:id" caseSensitive={false} element={<MachineInfo auth={auth}/>} />
           <Route path="/timer" caseSensitive={false} element={<Timer auth={auth}/>} />
+          <Route path="/qrcodes" caseSensitive={false} element={<Codes auth={auth}/>} />
         </Routes>
       </div>
     </Router>
