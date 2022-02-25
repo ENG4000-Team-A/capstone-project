@@ -1,6 +1,6 @@
 from tracemalloc import start
 from .models import Machine, User_uses_machine
-from .scripts.SwitchScript import ConsolSwitch
+from .scripts.SwitchScript import ConsoleSwitch
 from .InternalSocketConnect import InternalSocket
 from .notifications import sendSMS, NOTIF_TIMES
 from threading import Thread
@@ -15,64 +15,70 @@ import sys
 # Period in seconds in between syncing switches to machine state
 SYNC_PERIOD = 10
 
+
 # seperated out because nested function calls didnt work
 def turn_off_switch_help(ip):
-    asyncio.run(ConsolSwitch(0, ip))
+    asyncio.run(ConsoleSwitch(0, ip))
+
 
 def turn_on_switch_help(ip):
-	asyncio.run(ConsolSwitch(1, ip))
+    asyncio.run(ConsoleSwitch(1, ip))
 
 
 # runs kasa functions in another background thread
 def switch_off(ip):
-	t = Thread(target=turn_off_switch_help, args=(ip,))
-	t.start()
+    t = Thread(target=turn_off_switch_help, args=(ip,))
+    t.start()
+
 
 def switch_on(ip):
-	t = Thread(target=turn_on_switch_help, args=(ip,))
-	t.start()
+    t = Thread(target=turn_on_switch_help, args=(ip,))
+    t.start()
 
-# runs the update time function 
+
+# runs the update time function
 def update_time(socket, username, time):
     return socket.update_time(username, time)
 
-#thread to update the time balance of the user
+
+# thread to update the time balance of the user
 def update_time_thread(socket):
-    #represents the seconds on the clock we will update time
+    # represents the seconds on the clock we will update time
     check_seconds = [00, 15, 30, 45]
     interval = 15
 
-    #The current system time and the seconds of the current clock
+    # The current system time and the seconds of the current clock
     curr_time = timezone.now()
     clock_second = int(curr_time.strftime('%S'))
 
     print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
-    
-    #if the current clock second is equal to one of the interval times update users' time
-    if clock_second in check_seconds :
-        #queries for all active machines
+
+    # if the current clock second is equal to one of the interval times update users' time
+    if clock_second in check_seconds:
+        # queries for all active machines
         active_machines = User_uses_machine.objects.filter(
-            expired = False
-            )
-        #print(active_machines)
-        #loop through each active machine
+            expired=False
+        )
+        # print(active_machines)
+        # loop through each active machine
         for machine in active_machines:
-            #determine the seconds between the start of the machine and the current time to figure out if the machine
+            # determine the seconds between the start of the machine and the current time to figure out if the machine
             # started less than the interval
             start_dif = int((curr_time - machine.start_time).total_seconds())
-            #print(f"{curr_time} {machine.start_time}")
-            #print(f"{start_dif}")
-            
-            if (start_dif < interval) :
-                #If the machine started less than interval update time by difference
+            # print(f"{curr_time} {machine.start_time}")
+            # print(f"{start_dif}")
+
+            if start_dif < interval:
+                # If the machine started less than interval update time by difference
                 update_time(socket, machine.user.username, start_dif)
                 print(f"updating {machine.user.username} time by {start_dif} seconds")
-            else :
-                #else update by interval
+            else:
+                # else update by interval
                 update_time(socket, machine.user.username, interval)
                 print(f"updating {machine.user.username} time by {interval} seconds")
 
-def update_expired_machines() :
+
+def update_expired_machines():
     # like an SQL SELECT where only looking for unexpired timers, from today,
     # with end_time before now
     query_set = User_uses_machine.objects.filter(
@@ -86,12 +92,12 @@ def update_expired_machines() :
         query.save()
         switch_off(query.machine.ip)
         print(query.user.username + ' on ' + query.machine.name + ' ended at '
-                + query.end_time.strftime("%m/%d/%Y, %H:%M:%S") + ', set to inactive')
+              + query.end_time.strftime("%m/%d/%Y, %H:%M:%S") + ', set to inactive')
 
 
 def query_time():
     i = 0
-    #create the socket that connects to ExternalSocket
+    # create the socket that connects to ExternalSocket
     socket = InternalSocket()
 
     while True:
@@ -102,58 +108,56 @@ def query_time():
         update_expired_machines()
         if i >= SYNC_PERIOD:
             i = 0
-            t= Thread(target=sync_switch_states)
+            t = Thread(target=sync_switch_states)
             t.start()
         i += 1
         # minimum 1 second between loops, but usually 1.01s on my machine.
         # may need to change value to guarantee 1s between loops
         time.sleep(1)
 
+
 def sync_switch_states():
     """
     Syncs smart switches to match the Machine states.
     """
     # print("Checking switch states")
-    devices = asyncio.run(Discover.discover()) # Scan for devices
-    machines = Machine.objects.all() # Get machines
+    devices = asyncio.run(Discover.discover())  # Scan for devices
+    machines = Machine.objects.all()  # Get machines
     for m in machines:
-        for addr, dev in devices.items(): # addr is ip address, dev is SmartDevice
-            #asyncio.run(dev.update())
-            if (m.ip == addr):
-                if (dev.is_on and m.active == False ):
+        for addr, dev in devices.items():  # addr is ip address, dev is SmartDevice
+            # asyncio.run(dev.update())
+            if m.ip == addr:
+                if dev.is_on and m.active == False:
                     asyncio.run(dev.turn_off())
                     print("Shutting down machine with ip: {ip}".format(ip=addr))
-                elif (not dev.is_on and m.active == True):
+                elif not dev.is_on and m.active == True:
                     asyncio.run(dev.turn_on())
                     print("Powering on machine with ip: {ip}".format(ip=addr))
                 else:
                     print("State okay")
 
 
-def stop_timer(active_timer :User_uses_machine):
-    """
-	Sets endtime of an active timer to now.
-	Sets users time to remaining timer value.
-	"""
-	new_endtime = timezone.now()
-	delta = active_timer.end_time - new_endtime
-	active_timer.end_time = new_endtime
-	active_timer.save()
-	active_timer.user.time = delta.total_seconds()
-	active_timer.user.save()
+def stop_timer(active_timer: User_uses_machine):
+    # Sets endtime of an active timer to now.
+    # Sets users time to remaining timer value.
+    new_endtime = timezone.now()
+    delta = active_timer.end_time - new_endtime
+    active_timer.end_time = new_endtime
+    active_timer.save()
+    active_timer.user.time = delta.total_seconds()
+    active_timer.user.save()
 
 
 def send_notifications():
-
     active_machines = User_uses_machine.objects.filter(
-            expired=False
-            )
-    #loop through each active machine
+        expired=False
+    )
+    # loop through each active machine
     for machine in active_machines:
-        #looks for valid format phone number without country calling code
+        # looks for valid format phone number without country calling code
         if len(machine.user.phone_number) == 10:
             # country code for Canada and US, will need proper way to get for other countries
-            country_code= "+1"
+            country_code = "+1"
             timer = int((machine.end_time - timezone.now()).total_seconds())
             if timer in NOTIF_TIMES:
                 msg = str(int(timer / 60)) + " minutes remaining on " + machine.machine.name + "."
@@ -161,14 +165,14 @@ def send_notifications():
                 # print('sending sms')
                 t = Thread(target=sendSMS, args=(country_code + machine.user.phone_number, msg,))
                 t.setName('SMS')
-                t.start() 
+                t.start()
+
 
 def start_query_daemon():
     """runs query_time in a background thread"""
-    if sys.version_info[0] == 3 and sys.version_info[1] >= 8 and sys.platform.startswith('win'): # windows bug https://github.com/encode/httpx/issues/914
+    if sys.version_info[0] == 3 and sys.version_info[1] >= 8 and sys.platform.startswith(
+            'win'):  # windows bug https://github.com/encode/httpx/issues/914
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     t = Thread(target=query_time)
     t.daemon = True
     t.start()
-
-

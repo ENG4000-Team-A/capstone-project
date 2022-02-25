@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 
+
 # Create your views here.
 
 def timer(request, id):
@@ -32,10 +33,10 @@ def timer(request, id):
         stop_timer(user_uses_machine)
         # redirects to same page only to show user the change to timer
         return HttpResponseRedirect('/timer/' + str(id))
-    else:        
+    else:
         return render(request, "countdown.html",
-                    {"machine": machine, "username": username, "user_uses_machine": user_uses_machine,
-                    "epochTime": epochTime})
+                      {"machine": machine, "username": username, "user_uses_machine": user_uses_machine,
+                       "epochTime": epochTime})
 
 
 def time_manager(request, id):
@@ -54,8 +55,8 @@ def time_manager(request, id):
             # turns on the switch & set machine to active
             machine.active = True
             machine.save()
-            switch_on(machine.ip)           
-        # redirect to timer countdown page
+            switch_on(machine.ip)
+            # redirect to timer countdown page
         return HttpResponseRedirect('/timer/' + str(id))
     else:
         # convert the time to hh:mm:ss and send to template
@@ -63,24 +64,24 @@ def time_manager(request, id):
     return render(request, "time_manager.html", {"machine": machine, "user": user, "timeLeft": timeLeft})
 
 
-@csrf_exempt 
+@csrf_exempt
 def login(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
 
         body = json.loads(request.body)
-        #username = body['uname']
-        #password = body['pword']
+        # username = body['uname']
+        # password = body['pword']
         form = NameForm(body)
-        
+
         # check whether it's valid:
         if form.is_valid():
             data = form.validate_login(form.cleaned_data['uname'], form.cleaned_data['pword'])
-            
+
             if data is not None:
                 # Create a new instance of the user model if the user is not yet on our system
-                if data["usernameExists"] and data["validPassword"]:  
+                if data["usernameExists"] and data["validPassword"]:
                     try:
                         user_exists = User.objects.get(username=data['username'])
                     except User.DoesNotExist:
@@ -91,7 +92,7 @@ def login(request):
                                         phone_number=data["phoneNumber"])
                         new_user.save()
                     return JsonResponse({"status": 'Successful Login',
-                    })
+                                         })
                 else:
                     return JsonResponse({"status": 'Credentials not valid'})
 
@@ -102,18 +103,20 @@ def login(request):
                 # but now just show the json response for us to observe
 
         else:
-            return JsonResponse({"status": 'Fail: form not valid'}) 
-                
-    # if a GET (or any other method) we'll create a blank form
+            return JsonResponse({"status": 'Fail: form not valid'})
+
+            # if a GET (or any other method) we'll create a blank form
     else:
         form = NameForm()
-    return JsonResponse({"status": 'Fail: Not a POST request'}) 
+    return JsonResponse({"status": 'Fail: Not a POST request'})
+
 
 def getMachines(request):
     mid = request.GET.get('id', None)
     if mid is not None:
-        return JsonResponse({'data':model_to_dict(Machine.objects.get(pk=mid))})
+        return JsonResponse({'data': model_to_dict(Machine.objects.get(pk=mid))})
     return JsonResponse({'data': list(Machine.objects.all().values())})
+
 
 def getUsers(request):
     uname = request.GET.get('uname', None)
@@ -123,7 +126,7 @@ def getUsers(request):
             user = model_to_dict(User.objects.get(username=uname))
         except Exception as e:
             user = {}
-        return JsonResponse({'data':user})
+        return JsonResponse({'data': user})
     return JsonResponse({'data': list(User.objects.all().values())})
 
 

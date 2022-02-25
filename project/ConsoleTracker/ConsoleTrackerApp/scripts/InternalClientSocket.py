@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-import socket, json, argparse
+import argparse
+import json
+import socket
 from argparse import RawTextHelpFormatter
 
 HOST = '127.0.0.1'  # The server's hostname or IP address
