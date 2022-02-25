@@ -88,6 +88,7 @@ class User_uses_machine(models.Model):
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
     start_time = models.DateTimeField(default=timezone.now)
     end_time = models.DateTimeField(default=timezone.now)
+    init_Balance = models.PositiveIntegerField(null=False, default=0)
     expired = models.BooleanField(default=False, null=False)
 
     # changes to these values are not respected on django-admin

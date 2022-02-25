@@ -1,69 +1,84 @@
 import React, {useEffect, useState} from 'react'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
+import axios from 'axios';
 import './Timer.css'
+import { modalClasses, modalUnstyledClasses } from '@mui/material';
 
-function StopTimer() {
-    /* Functionality to be implemented */
-    console.log(StopTimer);
+const API_URL = "http://127.0.0.1:8000/timer/" + localStorage.getItem("user");
+const BASE_URL = "http://127.0.01:8000/"
+var timer
+var remainingTime
+var then
+
+function StopTimer(user) {
+  /**When STOP button is pressed:
+   *  POST request with action: "stop" sent to stop timer
+   *  Then redirects back to home
+   */
+
+  // POST request to change end time
+  // NOTE: Stopping early does not reflect an accurate amount of time to the model
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", API_URL, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify({
+      "action": "stop"
+  }));
 }
-function Timer() {
-    /* Placeholder code from (https://www.w3schools.com/js/js_dates.asp) to confirm timer works. Replace to calculate time left when linked to model -Chandler*/
-    const calculateTimeLeft = () => {
-        let year = new Date().getFullYear();
-        const difference = +new Date(`${year}-10-1`) - +new Date();
-        let timeLeft = {};
-    
-        if (difference > 0) {
-          timeLeft = {
-            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-            minutes: Math.floor((difference / 1000 / 60) % 60),
-            seconds: Math.floor((difference / 1000) % 60),
-          };
-        }
-    
-        return timeLeft;
-      };
-    
-      const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-      const [year] = useState(new Date().getFullYear());
-    
-      useEffect(() => {
-        setTimeout(() => {
-          setTimeLeft(calculateTimeLeft());
-        }, 1000);
-      });
-    
-      const timerComponents = [];
-    
-      Object.keys(timeLeft).forEach((interval) => {
-        if (!timeLeft[interval]) {
-          return;
-        }
-    
-        timerComponents.push(
-          <span>
-            {timeLeft[interval]} {interval}{" "}
-          </span>
-        );
-      });
-    /* End of placeholder code */
-    return (
 
-        <div className='timer_container'>
-                
-            <div className='time'>
-                {timerComponents[1]}: {timerComponents[2]} : {timerComponents[3]}
-                <div className='button'>
-                    <Button variant="contained" onClick={StopTimer}>
-                       STOP PLAYING
-                    </Button>
-                </div>
-            </div>
-            
-        </div>
+function startCountdown(id){
+  // timer starts automatically. ISSUE: timer flicker
+    timer = setInterval(function(){countdown(id)}, 1000); 
+}
+
+function countdown(id){
+
+  var now = Math.floor(Date.now() / 1000);
+	remainingTime = then - now;
+
+	var hour = Math.floor(remainingTime / (60 * 60) );
+	var min = Math.floor((remainingTime / 60) % 60 );
+	var sec = Math.floor(remainingTime % 60);
+
+	if (remainingTime < 0){
+		hour = 0;
+		min = 0;
+		sec = 0;
+    StopTimer();
+	}
+
+	var result = hour +':'+ min +':'+ sec;
+	document.getElementById(id).innerHTML = result;
+}
+
+function Timer_Function() {
+
+  const [userData, setUserData] = useState([]);
+
+  useEffect(()=>{
+      // User Uses Machine
+      axios.get(API_URL
+      ).then(response => {
+          setUserData(response.data.data);
+          console.log(response.data.data)
+       }).catch(error => {
+          console.log(error)
+      })  
+  },[]);
+
+  then = Math.floor(  new Date(userData["end_time"]) / 1000);
+
+    return (
+      <div className='timer_container'>
+          <div className='time' id="timer">
+          {startCountdown("timer")}
+          </div>           
+          <div className='button'>
+            <Button variant="contained" onClick={StopTimer}> STOP </Button>
+          </div>
+      </div>
     )
 }
 
-export default Timer;
+export default Timer_Function;

@@ -22,7 +22,7 @@ function Home({auth}) {
     axios.get(`http://localhost:8000/users/?uname=${username}`)
         .then(response => {
             console.log(response.data.data);
-            setInfo(response.data.data)
+            setInfo(response.data.data);
         })
         .catch(error => {
             console.log(error);
@@ -31,7 +31,7 @@ function Home({auth}) {
 }, []);
 
 
-  return <main>
+  return <div>
       {auth &&
         <div class="main-content-container">
           <div class='section-container profile'>
@@ -56,7 +56,7 @@ function Home({auth}) {
                   <div class="col-sm-12 col-6">
                     <div class="card dark">
                       <h3 class="light-header"> Time Remaining </h3>
-                      <h3> {userInfo.time} minutes </h3>
+                      <h3> {(userInfo.time/ 60).toFixed(1)} minutes </h3>
                     </div>
                   </div>
                   <div class="col-sm-12 col-6">
@@ -69,13 +69,16 @@ function Home({auth}) {
               </div>
             </div>
           </div>
+        <div>Hello {userInfo.first_name} {userInfo.last_name}! <br/> Phone No: {userInfo.phone_number}
+        <br/> Time: {userInfo.time / 60} minutes
+        </div>
         </div>
       }
       {!auth &&
         <div>Please login</div>
       }
 
-  </main>;
+  </div>;
 }
 
 export default Home;

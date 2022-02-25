@@ -21,11 +21,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path('time_manager/<int:id>', views.time_manager, name='time_manager'),
-                  path('timer/<int:id>', views.timer, name='timer'),
+                  path('timer/<str:uname>', views.timer, name='timer'),
+                  path('start_timer/<int:id>', views.start_timer, name='start_timer'),
                   path('login/', views.login, name='login'),
                   path('machines/', views.getMachines, name='machines'),
-                  path('users/', views.getUsers, name='users'),
+                  path('users/', views.getUsers, name="users")
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # runs the time checking background task at startup

@@ -1,18 +1,21 @@
 
 .timer_container {
-    display: flex;
+    display: box;
     font-size: large;
     justify-content: center;
     align-items: center;
-    background-color: rgb(40, 44, 52);
+    margin: auto;
+    border-style: solid;
+    color: grey;
+
 }
 
 .time {
+    display: box;
     margin-top: 10%;
     margin-bottom: 10%;
-    /* Allows for change in font size */
-    font-size: 5.9vw; 
-    color: white;
+    font-size: xx-large;
+    color: black;
     justify-content: center;
     align-items: center;
 }
@@ -20,7 +23,11 @@
 .button {
     justify-content: center;
     align-items: center;
-    display: flex;
+    display: box;
     margin-top: 10%;
-    size: 100px;
+    size: 150px;
+    margin: auto;
+    padding: 2%;
+
+    
 }
