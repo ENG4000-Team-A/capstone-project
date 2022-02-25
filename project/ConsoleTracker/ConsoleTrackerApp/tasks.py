@@ -11,6 +11,7 @@ import time
 import pytz
 from kasa import Discover
 import sys
+from django.forms.models import model_to_dict
 
 # Period in seconds in between syncing switches to machine state
 SYNC_PERIOD = 10
@@ -29,7 +30,6 @@ def turn_on_switch_help(ip):
 def switch_off(ip):
     t = Thread(target=turn_off_switch_help, args=(ip,))
     t.start()
-
 
 def switch_on(ip):
     t = Thread(target=turn_on_switch_help, args=(ip,))
@@ -98,6 +98,8 @@ def update_expired_machines():
         query.machine.save()
         query.expired = True
         query.save()
+        query.user.time = 0
+        query.user.save()
         switch_off(query.machine.ip)
         print(query.user.username + ' on ' + query.machine.name + ' ended at '
               + query.end_time.strftime("%m/%d/%Y, %H:%M:%S") + ', set to inactive')
@@ -145,17 +147,6 @@ def sync_switch_states():
                     print("State okay")
 
 
-def stop_timer(active_timer: User_uses_machine):
-    # Sets endtime of an active timer to now.
-    # Sets users time to remaining timer value.
-    new_endtime = timezone.now()
-    delta = active_timer.end_time - new_endtime
-    active_timer.end_time = new_endtime
-    active_timer.save()
-    active_timer.user.time = delta.total_seconds()
-    active_timer.user.save()
-
-
 def send_notifications():
     active_machines = User_uses_machine.objects.filter(
         expired=False
@@ -174,6 +165,35 @@ def send_notifications():
                 t = Thread(target=sendSMS, args=(country_code + machine.user.phone_number, msg,))
                 t.setName('SMS')
                 t.start()
+                
+def stop_timer(active_timer :User_uses_machine):
+    """
+    Sets endtime of an active timer to now.
+    Sets users time to remaining timer value.
+    """
+    """
+    new_endtime = timezone.now()
+    delta = active_timer.end_time - new_endtime
+    active_timer.end_time = timezone.now() + delta
+    active_timer.start_time = timezone.now()
+    active_timer.save()
+    active_timer.user.time = delta.total_seconds()
+    active_timer.user.save()
+    """
+    print("Start time = {st}, Endtime = {et}, Initial Balance = {eb}".format(st=active_timer.start_time, et=active_timer.end_time, eb=active_timer.init_Balance))
+    new_endtime = timezone.now()
+    print("New Endtime = {nt}".format(nt=new_endtime))
+    active_timer.end_time = new_endtime
+    active_timer.expired = True
+    delta = (new_endtime - active_timer.start_time).total_seconds()
+    print("Time Used = {tu}".format(tu=delta))
+    active_timer.user.time = active_timer.init_Balance - delta
+    print("New Balance = ", active_timer.user.time)
+    active_timer.machine.active = False
+
+    active_timer.save()
+    active_timer.user.save()
+    active_timer.machine.save()
 
 
 def start_query_daemon():
