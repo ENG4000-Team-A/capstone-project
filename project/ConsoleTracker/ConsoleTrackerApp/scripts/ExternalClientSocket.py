@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import socket, json, sys, signal
-import string
+import json
 import random  # Random val generator
+import socket
+import string
 
 HOST = '127.0.0.1'  # The server's hostname or IP address
 PORT = 5073  # The port used by the server
@@ -20,16 +21,14 @@ user_db = {
     "daven634": "56509jeanHHH"
 }
 
-
-#represents the time remining in a users account
+# represents the time remining in a users account
 time_db = {
     "chris354": 300,
     "eric123": 450,
     "daven634": 60
 }
 
-
-#TODO: refactor to seperate the different messages recieved
+# TODO: refactor to seperate the different messages recieved
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     while True:
@@ -37,12 +36,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         if data:
             print(data)
             data = json.loads(data.decode())
-            #seperate the message types
-            if data["msg"] == "timer_update" : 
+            # seperate the message types
+            if data["msg"] == "timer_update":
                 if data["username"] in time_db:
                     time_db[data["username"]] -= data["time"]
                     print(time_db)
-            else :
+            else:
                 if data["username"] in user_db:  # Check if username exists
                     if user_db[data["username"]] == data["password"]:  # Is password correct?
                         data["usernameExists"] = True
@@ -58,4 +57,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     data["usernameExists"] = False
                     data["validPassword"] = False
             s.sendall(json.dumps(data).encode())
-
