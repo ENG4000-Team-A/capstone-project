@@ -1,5 +1,5 @@
 from tracemalloc import start
-from .models import Machine, User_uses_machine
+from .models import Machine, User_uses_machine, User
 from .scripts.SwitchScript import ConsoleSwitch
 from .InternalSocketConnect import InternalSocket
 from .notifications import sendSMS, NOTIF_TIMES
@@ -39,6 +39,14 @@ def switch_on(ip):
 # runs the update time function
 def update_time(socket, username, time):
     return socket.update_time(username, time)
+
+
+# Updates a users time upon request form opus
+def update_user_time(username, new_time):
+    user = User.objects.get(username=username)
+    if user is not None:
+        user.time = new_time
+        user.save()
 
 
 # thread to update the time balance of the user
