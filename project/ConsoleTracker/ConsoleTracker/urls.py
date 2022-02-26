@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ConsoleTrackerApp import views, tasks
+from ConsoleTrackerApp import views, tasks, InternalSocketListener
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -30,3 +30,6 @@ urlpatterns = [
 
 # runs the time checking background task at startup
 tasks.start_query_daemon()
+
+# run listener in the background for requests from external system
+InternalSocketListener.start_listener_daemon()
