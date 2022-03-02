@@ -1,4 +1,3 @@
-from tracemalloc import start
 from .models import Machine, User_uses_machine, User
 from .scripts.SwitchScript import ConsoleSwitch
 from .InternalSocketConnect import InternalSocket
@@ -6,9 +5,7 @@ from .notifications import sendSMS, NOTIF_TIMES
 from threading import Thread
 from django.utils import timezone
 import asyncio
-import datetime
 import time
-import pytz
 from kasa import Discover
 import sys
 from django.forms.models import model_to_dict
@@ -59,7 +56,7 @@ def update_time_thread(socket):
     curr_time = timezone.now()
     clock_second = int(curr_time.strftime('%S'))
 
-    print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
+    # print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
 
     # if the current clock second is equal to one of the interval times update users' time
     if clock_second in check_seconds:
@@ -129,32 +126,30 @@ def query_time():
 def sync_switch_states():
     """
     Syncs smart switches to match the Machine states.
+    Also adds any kasa plugs on network to database,
+    or updates database when IP is incorrect.
     """
-    # print("Checking switch states")
     devices = asyncio.run(Discover.discover())  # Scan for devices
-    machines = Machine.objects.all()  # Get machines
     for addr, dev in devices.items():  # addr is ip address, dev is SmartDevice
-        try:
-            existing = machines.get(mac=dev.mac)    # try to get matching row in table
-            if existing.ip != addr: # correcting IP if it's old/wrong
-                existing.ip = addr
-                existing.save()
-                print("IP for " + existing.name + " changed to " + str(addr))
-        except:
-            Machine.objects.create(name=dev.alias, mac=dev.mac, ip=addr)    #add new row
-            print('New machine: "' + dev.alias + '" added.')
-    for m in machines:
-        for addr, dev in devices.items():  # addr is ip address, dev is SmartDevice
-            # asyncio.run(dev.update())
-            if m.ip == addr:
-                if dev.is_on and m.active == False:
-                    asyncio.run(dev.turn_off())
-                    print("Shutting down machine with ip: {ip}".format(ip=addr))
-                elif not dev.is_on and m.active == True:
-                    asyncio.run(dev.turn_on())
-                    print("Powering on machine with ip: {ip}".format(ip=addr))
-                else:
-                    print("State okay")
+        if dev.is_plug:
+            try:
+                m = Machine.objects.get(mac=dev.mac)    # try to get matching row in table
+                if m.ip != addr: # correcting IP if it's old/wrong
+                    m.ip = addr
+                    m.save()
+                    print("IP for " + m.name + " changed to " + str(addr))
+                else:   #matching switch states to machine states
+                    if dev.is_on and not m.active:
+                        asyncio.run(dev.turn_off())
+                        print("Shutting down machine with ip: {ip}".format(ip=addr))
+                    elif not dev.is_on and m.active:
+                        asyncio.run(dev.turn_on())
+                        print("Powering on machine with ip: {ip}".format(ip=addr))
+                    # else:
+                        # print("State okay")
+            except:
+                Machine.objects.create(name=dev.alias, mac=dev.mac, ip=addr)    #add new row
+                print('New machine: "' + dev.alias + '" added.')
 
 
 def send_notifications():
