@@ -40,6 +40,7 @@ class Machine(models.Model):
     name = models.CharField(max_length=50, blank=True, null=False)
     active = models.BooleanField(default=False)
     ip = models.GenericIPAddressField(default="127.0.0.1", null=False, unique=True)
+    mac = models.CharField(default='00:00:00:00:00:00', max_length=17, null=False, unique=True)
     machine_type = models.CharField(max_length=50, blank=True, null=False)
 
 '''

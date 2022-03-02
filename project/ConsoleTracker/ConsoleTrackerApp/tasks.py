@@ -131,6 +131,16 @@ def sync_switch_states():
     # print("Checking switch states")
     devices = asyncio.run(Discover.discover())  # Scan for devices
     machines = Machine.objects.all()  # Get machines
+    for addr, dev in devices.items():  # addr is ip address, dev is SmartDevice
+        try:
+            existing = machines.get(mac=dev.mac)    # try to get matching row in table
+            if existing.ip != addr: # correcting IP if it's old/wrong
+                existing.ip = addr
+                existing.save()
+                print("IP for " + existing.name + " changed to " + str(addr))
+        except:
+            Machine.objects.create(name=dev.alias, mac=dev.mac, ip=addr)    #add new row
+            print('New machine: "' + dev.alias + '" added.')
     for m in machines:
         for addr, dev in devices.items():  # addr is ip address, dev is SmartDevice
             # asyncio.run(dev.update())
