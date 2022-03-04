@@ -14,6 +14,8 @@ PORT = 5073  # The port used by the server
 def listen():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
+        initMsg = {"conn_type": 1}
+        s.sendall(json.dumps(initMsg).encode())
         while True:
             data = s.recv(1024)
             if data:

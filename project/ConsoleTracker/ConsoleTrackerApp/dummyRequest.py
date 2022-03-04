@@ -20,6 +20,12 @@ timeBalance = 200
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
-    s.sendall("{{\"messageType\": \"{m}\", \"username\": \"{u}\", \"timeBalance\": \"{t}\"}}"
-              .format(m=messageType, u=username, t=timeBalance).encode())
+    data = {
+        "messageType": messageType,
+        "username": username,
+        "timeBalance": timeBalance,
+        "dest": "django"
+    }
+    s.sendall(json.dumps(data).encode())
+
     print("Sent dummy request with username : " + username + ", timeBalance : " + str(timeBalance))
