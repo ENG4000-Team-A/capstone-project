@@ -10,7 +10,8 @@
 .time {
     margin-top: 10%;
     margin-bottom: 10%;
-    font-size: xx-large;
+    /* Allows for change in font size */
+    font-size: 5.9vw; 
     color: white;
     justify-content: center;
     align-items: center;
@@ -22,6 +23,4 @@
     display: flex;
     margin-top: 10%;
     size: 100px;
-
-    
 }

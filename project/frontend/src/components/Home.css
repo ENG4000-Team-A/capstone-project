@@ -1,0 +1,86 @@
+.login__container {
+    border:1px solid green;
+}
+
+/* COLOR SCHEME */
+
+:root {
+    --light-shade: rgb(251, 251, 250);
+    --light-accent: rgb(59, 86, 190);
+    --main: rgb(42, 126, 219);
+    --background: rgb(31, 37, 52);
+    --dark-accent: rgb(116, 111, 142);
+    --dark-shade: rgb(13, 15, 19);
+
+    --nav-height: 56px;
+}
+
+.light-header {
+    color: var(--main);
+}
+
+/* containers and coontent areas*/
+
+.main-content-container {
+    background-color: var(--background);
+    min-height: calc(100vh - var(--nav-height));
+}
+
+.section-container {
+    padding: 40px 0;
+}
+
+.wrap {
+    max-width: 1440px;
+    width: 100%;
+    margin: auto;
+}
+
+.content {
+    padding: 0 8.33%;
+}
+
+/* PROFILE PAGE */
+/* profile pic and info section */
+
+.profile {
+    text-align: -webkit-center;
+    color: var(--light-shade);
+}
+
+.profile-pic > img {
+    max-width: 125px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.card {
+    border-radius: 15px;
+    height: 100%;
+    overflow: auto;
+    padding: 0 15px;
+}
+
+.card.dark {
+    color: var(--light-shade);
+    background-color: var(--dark-shade);
+}
+  
+/* DESKTOP */
+
+@media only screen and (min-width: 768px) {
+
+    :root {
+        --nav-height: 56px;
+    }
+
+    /* PROFILE PAGE */
+
+    .profile {
+        text-align: left;
+    }
+
+    .profile-pic > img {
+        max-width: 200px;
+    }
+}
