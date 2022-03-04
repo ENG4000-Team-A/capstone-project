@@ -145,7 +145,6 @@ class TestUser(TestCase):
             self.assertEqual(user.time, times[count])
             self.assertEqual(user.phone_number, phone_numbers[count])
 
-
         # Reset Objects
         User.objects.all().delete()
         self.assertEqual(User.objects.count(), 0)

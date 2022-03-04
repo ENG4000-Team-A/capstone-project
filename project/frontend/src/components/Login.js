@@ -4,10 +4,6 @@ import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
@@ -15,23 +11,10 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import {useState} from 'react' 
+import { useState } from 'react'
 
 const API_URL = "http://127.0.0.1:8000";
 
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="#">
-        ConsoleTracker
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 const theme = createTheme({
   palette: {
@@ -39,7 +22,7 @@ const theme = createTheme({
   },
 });
 
-export default function Login() {
+export default function SignIn() {
 
   const [username, setName] = useState('');
   const [password, setPass] = useState('');
@@ -51,31 +34,30 @@ export default function Login() {
       uname: username,
       pword: password
     }).then(function (response) { // logged in
-        alert(response.data.status);
-        console.log(response.data.status);
-        if (response.data.status === "Successful Login")
-        {
-          localStorage.setItem('loginCookie', "fiajoesifs939fjj");
-          localStorage.setItem('user', username);
-          navigate("/");
-        }
-        window.location.reload();
-      }).catch(function (error) { // invalid login
-        console.log(error)
-        alert(error.response.data);
-      });
+      alert(response.data.status);
+      console.log(response.data.status);
+      if (response.data.status === "Successful Login") {
+        localStorage.setItem('loginCookie', "fiajoesifs939fjj");
+        localStorage.setItem('user', username);
+        navigate("/");
+      }
+      window.location.reload();
+    }).catch(function (error) { // invalid login
+      console.log(error)
+      alert(error.response.data);
+    });
   }
 
   const handleNameChange = (e) => {
     setName(e.target.value)
     console.log("updated name");
 
-}
+  }
 
-const handlePassChange = (e) => {
+  const handlePassChange = (e) => {
     setPass(e.target.value);
     console.log("updated pass");
-}
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -129,36 +111,19 @@ const handlePassChange = (e) => {
               autoComplete="current-password"
               onChange={handlePassChange}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               onClick={() => {
-                handleLogin()   // Add click functionality here
+                handleLogin() 
               }}
             >
               Sign In
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2"> {/* replace # with correct reference */}
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"} {/* replace # with correct reference */}
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );

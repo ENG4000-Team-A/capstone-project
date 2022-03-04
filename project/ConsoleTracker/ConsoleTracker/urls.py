@@ -15,18 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ConsoleTrackerApp import views, tasks
+from ConsoleTrackerApp import views, tasks, InternalSocketListener
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path('time_manager/<int:id>', views.time_manager, name='time_manager'),
-                  path('timer/<int:id>', views.timer, name='timer'),
+                  path('timer/<str:uname>', views.timer, name='timer'),
+                  path('start_timer/<int:id>', views.start_timer, name='start_timer'),
                   path('login/', views.login, name='login'),
                   path('machines/', views.getMachines, name='machines'),
-                  path('users/', views.getUsers, name='users'),
+                  path('users/', views.getUsers, name="users")
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # runs the time checking background task at startup
 tasks.start_query_daemon()
+
+# run listener in the background for requests from external system
+InternalSocketListener.start_listener_daemon()
