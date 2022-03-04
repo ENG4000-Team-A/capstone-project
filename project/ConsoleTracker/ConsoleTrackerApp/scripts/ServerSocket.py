@@ -18,17 +18,16 @@ class ServerSocket:
         """
         Attributes
         ----------
-        msg_queue: Holds messages to sent to external app
-        response_queue: Holds reponse messages from external app
-        msg_id: message id (Unique)
+        msg_queue: Holds messages 
+        connection_id: connection id (Unique)
+        socket_recievers: dict holding connection ids for django, external
         lsock: the server socket
         sel: selector to allows effiecient concurrency
         """
         self.msg_queue = []
-        self.response_queue = []
-        self.msg_id = 0
+        self.connection_id = 0
+        self.socket_recievers = {"django": None, "external": None}
 
-        self.external_found = False
         self.sel = selectors.DefaultSelector()
 
         self.lsock = socket.socket(AF_INET, SOCK_STREAM)
@@ -64,72 +63,96 @@ class ServerSocket:
         conn, addr = sock.accept()
         print('Accepted connection from', conn, addr)
         conn.setblocking(False)
-        data = SimpleNamespace(addr=addr, external=False, mid=self.msg_id) if self.external_found else SimpleNamespace(
-            addr=addr, external=True)
-        self.msg_id += 1
-        self.external_found = True
+        data = SimpleNamespace(addr=addr, cid=self.connection_id)
+        self.connection_id += 1
         events = EVENT_READ | EVENT_WRITE
         self.sel.register(conn, events, data=data)
 
     def read_connection(self, sock, data):
         """Reads from a client socket
 
-	Parameters
+	    Parameters
         ----------
         sock: Socket
             The client socket
         data: SimpleNamespace
-            An object holding data specific to socket: address, external, message_id
+            An object holding data specific to socket: address, external, cid
         """
         recv_data = sock.recv(1024)
         if recv_data:
+            print("Recieved: ",recv_data.decode())
             dcd_recv_data = json.loads(recv_data.decode())
-            if data.external:
-                print("External Client Response:", dcd_recv_data)
-                self.response_queue.append(dcd_recv_data)
+            if 'conn_type' in dcd_recv_data.keys() :
+                if dcd_recv_data['conn_type'] == 1:
+                    self.socket_recievers["django"] = data.cid
+                elif dcd_recv_data['conn_type'] == 2:
+                    self.socket_recievers["external"] = data.cid
             else:
-                dcd_recv_data['mid'] = data.mid
-                self.msg_queue.append(dcd_recv_data)
-        elif not data.external:
+                if 'id' not in dcd_recv_data.keys():
+                    dcd_recv_data['id'] = data.cid
+                    dcd_recv_data['state'] = "request"
+                else:
+                    dcd_recv_data['state'] = "response"
+                if 'dest' in dcd_recv_data.keys():
+                    self.msg_queue.append(dcd_recv_data)
+                    print("Adding msg to queue = ",dcd_recv_data)
+                else:
+                    print("Ignoring message. No dest specified")
+        elif data.cid in self.socket_recievers:
+            pass    
+        else:
             print('Closing connection to', data.addr)
             self.sel.unregister(sock)
             sock.close()
 
+    
     def write_to_connection(self, sock, data):
         """Writes to a client socket
 
-	Parameters
+	    Parameters
         ----------
         sock: Socket
             The client socket
         data: SimpleNamespace
-            An object holding data specific to socket: address, external, message_id
-	"""
-        if data.external and len(self.msg_queue) > 0:
-            msg = self.msg_queue.pop()
-            sock.send(json.dumps(msg).encode())
-            print("Sent to external:", msg)
-        elif not data.external:
-            response = self.get_message(data)
-            if response is not None:
-                print('Sent to client', response)
-                sock.send(json.dumps(response).encode())
+            An object holding data specific to socket: address, external, cid
+	    """
 
-    def get_message(self, data):
+        if len(self.msg_queue) > 0:
+            msg = None
+            if data.cid == self.socket_recievers["django"] or data.cid == self.socket_recievers["external"]:
+                msg = self.get_message(data, "request")
+            else:
+                msg = self.get_message(data, "response")
+
+            if msg is not None:
+                sock.send(json.dumps(msg).encode())
+                print("Sent to cid {c}:".format(c=data.cid), msg)
+
+
+    def get_message(self, data, state): 
         """Retrieves a response for a client if there exists one.
 
         Parameters
         ----------
         data: SimpleNamespace
-            An object holding data specific to socket: address, external, message_id
+            An object holding data specific to socket: address, external, cid
         """
-        response = None
-        for i in self.response_queue:
-            if i["mid"] == data.mid:
-                response = i
-                self.response_queue.remove(i)
-                return response
-        return response
+        msg = None
+        to_Django = False
+        to_External = False
+
+        if state == "request":
+            if data.cid == self.socket_recievers["django"]:
+                to_Django = True
+            elif data.cid == self.socket_recievers["external"]:
+                to_External = True
+
+        for i in self.msg_queue:
+            if i["state"] == state and ((i["id"] == data.cid) or (to_Django and i["dest"] == "django") or (to_External and i["dest"] == "external")):
+                msg = i
+                self.msg_queue.remove(i)
+                return msg
+        return msg
 
 
 if __name__ == "__main__":

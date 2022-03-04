@@ -11,7 +11,7 @@ class InternalSocket:
     def send_request(self, username, password):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((self.host, self.port))
-            s.sendall("{{\"msg\": \"{m}\", \"username\": \"{u}\", \"password\": \"{p}\"}}"
+            s.sendall("{{\"msg\": \"{m}\", \"username\": \"{u}\", \"password\": \"{p}\",\"dest\": \"external\"}}"
                       .format(m="Sending username & password", u=username, p=password).encode())
             data = s.recv(1024)
             data = json.loads(data.decode())
