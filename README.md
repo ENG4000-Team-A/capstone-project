@@ -16,12 +16,19 @@ Currently, Gaming Cafes are able to exercise a high degree of control over the c
 |**8.** Run the command ```npm start``` to start the react app|
 |**9.** Open a new terminal and naviagte into [Scripts](https://github.com/ENG4000-Team-A/capstone-project/tree/main/project/ConsoleTracker/ConsoleTrackerApp/scripts) then run ```./ServerSocket.py```|
 |**10.** Open a new terminal and naviagte into [Scripts](https://github.com/ENG4000-Team-A/capstone-project/tree/main/project/ConsoleTracker/ConsoleTrackerApp/scripts) then run ```./ExternalClientSocket.py```|
-|**11.** You should be able to access the [login page](http://localhost:3000/login)|
+|**11.** Open a new terminal and naviagte into [ConsoleTracker](https://github.com/ENG4000-Team-A/capstone-project/tree/main/project/ConsoleTracker) then run ```python manage.py runserver```|
+|**12.** You should be able to access the [login page](http://localhost:3000/login)|
 
 ## Run Instructions For Tests
 | *Steps* |
 |----|
 |**1.** Navigate into the [project](https://github.com/ENG4000-Team-A/capstone-project/tree/main/project/ConsoleTracker) directory then run ```python manage.py test ConsoleTrackerApp```|
+
+## Run Instructions For Adding SSL Layer To Socket Scripts
+| *Steps* |
+|----|
+|**1.** Navigate into the [frontend](https://github.com/ENG4000-Team-A/capstone-project/tree/main/project/frontend) directory then run ```set HTTPS=true && npm start```|
+|**2.** Open a new terminal and naviagte into [frontend](https://github.com/ENG4000-Team-A/capstone-project/tree/main/project/frontend) directory then run the ```ssl_setup.bat``` script as administrator |
 
 ## Documentation
 * [Agile Roadmap](https://github.com/ENG4000-Team-A/capstone-project/blob/main/documents/Agile%20Roadmap.pdf)
