@@ -31,11 +31,15 @@ time_db = {
 # TODO: refactor to seperate the different messages recieved
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
+    initMsg = {"conn_type": 2}
+    s.sendall(json.dumps(initMsg).encode())
     while True:
+        
         data = s.recv(1024)
         if data:
             print(data)
             data = json.loads(data.decode())
+            data["dest"] = "django"
             # seperate the message types
             if data["msg"] == "timer_update":
                 if data["username"] in time_db:
