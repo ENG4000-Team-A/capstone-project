@@ -3,13 +3,13 @@ import './MachineInfo.css'
 import { useParams } from 'react-router-dom'
 import Button from '@mui/material/Button';
 import axios from 'axios';
-
+import { useAlert } from 'react-alert'
 
 function MachineInfo() {
     const { id } = useParams()
     const [machine, setMachine] = useState({});
     const [userInfo, SetUserInfo] = useState({});
-    
+    const alert = useAlert()
 useEffect(()=>{
     axios.get("http://localhost:8000/machines/?id="+id
     ).then(response => {
@@ -23,7 +23,6 @@ useEffect(()=>{
 },[]);
 useEffect(() => {
     const username = localStorage.getItem("user");
-    //setName(username);
     console.log(username);
     axios.get(`http://localhost:8000/users/?uname=${username}`)
         .then(response => {
@@ -40,24 +39,25 @@ function SubmitPlay() {
      * This function simply redirects to the timer page.
      * No data needs to be passed as user data is stored in cache
      */
-
-    axios.post("http://localhost:8000/start_timer/"+id, {
-        uname: userInfo.username
-    }).then(function (response) {
-    console.log(response);
-    var getUrl = window.location;
-    var redirect = getUrl .protocol + "//" + getUrl.host + "/" + "timer";    
-    window.location.assign(redirect);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-
-
+     if(userInfo.time==0){
+        alert.show('you need to Purchase time to play')
+    }
+    else{
+        axios.post("http://localhost:8000/start_timer/"+id, {
+            uname: userInfo.username
+        }).then(function (response) {
+        console.log(response);
+        var getUrl = window.location;
+        var redirect = getUrl .protocol + "//" + getUrl.host + "/" + "timer";    
+        window.location.assign(redirect);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+    
 
 }
-
-
 
 
     return (
