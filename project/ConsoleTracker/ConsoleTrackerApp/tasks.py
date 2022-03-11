@@ -110,9 +110,27 @@ def update_expired_machines():
         query.save()
         query.user.time = 0
         query.user.save()
+        # stop_timer(query) // would like to use this instead but currently broken due to negative time.
         switch_off(query.machine.ip)
         print(query.user.username + ' on ' + query.machine.name + ' ended at '
               + query.end_time.strftime("%m/%d/%Y, %H:%M:%S") + ', set to inactive')
+
+
+def set_new_endtimes():
+    """
+    Sets the endtime of timers to reflect the master user time balance from the external software.
+    Since user.time is set to 0 (akin to adding all their time to a timer),
+    when user.time > 0, it means master time balance has been updated and we must update the endtime.
+    """
+    query_set = User_uses_machine.objects.filter(
+        expired=False,
+        user__time__gt=0)
+    for query in query_set:
+        query.end_time = timezone.now() + timezone.timedelta(seconds=query.user.time)
+        query.user.time = 0
+        query.user.save()
+        query.save()
+        
 
 
 def query_time():
@@ -125,6 +143,7 @@ def query_time():
         send_notifications()
         # like an SQL SELECT where only looking for unexpired timers, from today,
         # with end_time before now
+        set_new_endtimes()
         update_expired_machines()
         if i >= SYNC_PERIOD:
             i = 0
