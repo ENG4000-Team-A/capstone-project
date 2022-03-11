@@ -61,7 +61,7 @@ function SubmitPlay() {
 
 
     return (
-        <div className='machineinfo__container'>
+        <div className='machineinfo__container' data-testid="machine_info">
             <div>
                     <div key={userInfo.first_name}>
                         <p>
