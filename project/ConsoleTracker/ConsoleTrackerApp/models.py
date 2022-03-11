@@ -43,6 +43,8 @@ class Machine(models.Model):
     mac = models.CharField(default='00:00:00:00:00:00', max_length=17, null=False, unique=True)
     machine_type = models.CharField(max_length=50, blank=True, null=False)
 
+    def __str__(self):
+            return self.name
 '''
     User (Model)
         - username = text field
@@ -64,6 +66,9 @@ class User(models.Model):
     last_name = models.TextField(blank=True, null=False)
     time = models.PositiveIntegerField(default=0, null=False)
     phone_number = models.CharField(max_length=12, blank=True, null=False)
+
+    def __str__(self):
+        return self.username
 
 
 '''
@@ -105,3 +110,6 @@ def on_creation_uses(sender, instance, created, **kwargs):
 
         instance.end_time = instance.start_time + timezone.timedelta(seconds=instance.user.time)
         instance.save()
+        
+        instance.user.time = 0
+        instance.user.save()
