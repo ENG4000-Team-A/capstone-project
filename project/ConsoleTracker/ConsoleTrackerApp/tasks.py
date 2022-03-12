@@ -40,10 +40,17 @@ def update_time(socket, username, time):
 
 # Updates a users time upon request form opus
 def update_user_time(username, new_time):
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = None
+
+    # Update the user time if exists
     if user is not None:
         user.time = new_time
         user.save()
+        return True
+    return False
 
 
 # thread to update the time balance of the user
