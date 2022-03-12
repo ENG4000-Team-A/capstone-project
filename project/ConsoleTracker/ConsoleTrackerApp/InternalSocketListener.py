@@ -25,8 +25,11 @@ def listen():
                 if messageType == 1:  # Update time request
                     timeBalance = int(data["timeBalance"])
                     username = data["username"]
-                    print("Update time request")
-                    update_user_time(username, timeBalance)
+
+                    if update_user_time(username, timeBalance):
+                        print("Update time request SUCCESS")
+                    else:
+                        print("Update time request FAILED")
                 elif messageType == 2:  # Ping request
                     print("Ping request")
 
