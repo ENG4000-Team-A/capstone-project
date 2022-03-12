@@ -16,6 +16,7 @@ def switch_off(ip):
     t = Thread(target=ConsoleSwitch, args=(0, ip,))
     t.start()
 
+
 def switch_on(ip):
     t = Thread(target=ConsoleSwitch, args=(1, ip,))
     t.start()
@@ -61,6 +62,11 @@ def update_user_time(username, new_time):
         return 
     active_timer.save()
 
+
+
+# Ping all machines in the system
+def ping_all_machines():
+    return list(Machine.objects.all())
 
 
 # thread to update the time balance of the user
@@ -147,12 +153,12 @@ def sync_switch_states():
     for addr, dev in devices.items():  # addr is ip address, dev is SmartDevice
         if dev.is_plug:
             try:
-                m = Machine.objects.get(mac=dev.mac)    # try to get matching row in table
-                if m.ip != addr: # correcting IP if it's old/wrong
+                m = Machine.objects.get(mac=dev.mac)  # try to get matching row in table
+                if m.ip != addr:  # correcting IP if it's old/wrong
                     m.ip = addr
                     m.save()
                     print("IP for " + m.name + " changed to " + str(addr))
-                else:   #matching switch states to machine states
+                else:  # matching switch states to machine states
                     if dev.is_on and not m.active:
                         asyncio.run(dev.turn_off())
                         print("Shutting down machine with ip: {ip}".format(ip=addr))
@@ -160,9 +166,9 @@ def sync_switch_states():
                         asyncio.run(dev.turn_on())
                         print("Powering on machine with ip: {ip}".format(ip=addr))
                     # else:
-                        # print("State okay")
+                    # print("State okay")
             except:
-                Machine.objects.create(name=dev.alias, mac=dev.mac, ip=addr)    #add new row
+                Machine.objects.create(name=dev.alias, mac=dev.mac, ip=addr)  # add new row
                 print('New machine: "' + dev.alias + '" added.')
 
 
@@ -199,7 +205,9 @@ def stop_timer(active_timer :User_uses_machine, now):
     active_timer.user.time = delta.total_seconds()
     active_timer.user.save()
     """
-    print("Start time = {st}, Endtime = {et}, Initial Balance = {eb}".format(st=active_timer.start_time, et=active_timer.end_time, eb=active_timer.init_Balance))
+    print("Start time = {st}, Endtime = {et}, Initial Balance = {eb}".format(st=active_timer.start_time,
+                                                                             et=active_timer.end_time,
+                                                                             eb=active_timer.init_Balance))
     new_endtime = now
     print("New Endtime = {nt}".format(nt=new_endtime))
     active_timer.end_time = new_endtime
