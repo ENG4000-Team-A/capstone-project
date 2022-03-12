@@ -9,7 +9,7 @@ import time
 from kasa import Discover
 import sys
 from django.forms.models import model_to_dict
-
+from datetime import timedelta
 # Period in seconds in between syncing switches to machine state
 SYNC_PERIOD = 10
 
@@ -50,6 +50,29 @@ def update_user_time(username, new_time):
     if user is not None:
         user.time = new_time
         user.save()
+
+        # Updating running timer if exists
+        active_timer = None
+        try:
+            active_timer = User_uses_machine.objects.get(user=user, expired=False)
+        except Exception as e:
+            return
+        # Current left time
+        delta = (active_timer.end_time - timezone.now()).total_seconds()
+        
+        # Adjust time if needed
+        time_diff = abs(delta-new_time)
+        if delta < new_time: # need to extend timer
+            active_timer.end_time += timedelta(seconds=time_diff)
+            active_timer.init_Balance += time_diff
+            
+        elif delta > new_time: # need to reduce timer
+            active_timer.end_time -= timedelta(seconds=time_diff)
+            active_timer.init_Balance -= time_diff
+
+        else: # unchanged
+            pass
+        active_timer.save()
         return True
     return False
 
@@ -110,7 +133,7 @@ def update_expired_machines():
         query.save()
         query.user.time = 0
         query.user.save()
-        # stop_timer(query) // would like to use this instead but currently broken due to negative time.
+        stop_timer(query) #// would like to use this instead but currently broken due to negative time.
         switch_off(query.machine.ip)
         print(query.user.username + ' on ' + query.machine.name + ' ended at '
               + query.end_time.strftime("%m/%d/%Y, %H:%M:%S") + ', set to inactive')
@@ -139,11 +162,11 @@ def query_time():
     socket = InternalSocket()
 
     while True:
-        update_time_thread(socket)
+        #update_time_thread(socket)
         send_notifications()
         # like an SQL SELECT where only looking for unexpired timers, from today,
         # with end_time before now
-        set_new_endtimes()
+        #set_new_endtimes()
         update_expired_machines()
         if i >= SYNC_PERIOD:
             i = 0
@@ -227,7 +250,7 @@ def stop_timer(active_timer: User_uses_machine):
     active_timer.expired = True
     delta = (new_endtime - active_timer.start_time).total_seconds()
     print("Time Used = {tu}".format(tu=delta))
-    active_timer.user.time = active_timer.init_Balance - delta
+    active_timer.user.time = max(0, active_timer.init_Balance - delta)
     print("New Balance = ", active_timer.user.time)
     active_timer.machine.active = False
 
