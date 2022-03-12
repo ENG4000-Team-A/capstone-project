@@ -19,7 +19,7 @@ password = args.message if args.message is not None else "greet984;d"  # Dummy P
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
-    #s.sendall("{\"conn_type\": 1}".encode())
+    # s.sendall("{\"conn_type\": 1}".encode())
     msg = {"msg": msg, "username": username, "password": password, "dest": "external"}
     s.sendall(json.dumps(msg).encode())
     print("Sent:", msg, username)
@@ -29,4 +29,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("Login Success")
     else:
         print("Login Failed")
-
