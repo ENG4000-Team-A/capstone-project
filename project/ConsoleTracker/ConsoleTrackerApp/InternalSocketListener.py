@@ -5,7 +5,7 @@ import socket
 import sys
 from threading import Thread
 
-from .tasks import update_user_time
+from .tasks import update_user_time, ping_all_machines
 
 HOST = '127.0.0.1'  # The server's hostname or IP address
 PORT = 5073  # The port used by the server
@@ -19,10 +19,11 @@ def listen():
         while True:
             data = s.recv(1024)
             if data:
+                print(data)
                 data = json.loads(data.decode())
-                messageType = int(data["messageType"])
+                msg = data["msg"] if "msg" in data else ""
                 # Check for message type
-                if messageType == 1:  # Update time request
+                if msg == "timer_update":  # Update time request
                     timeBalance = int(data["timeBalance"])
                     username = data["username"]
 
@@ -30,8 +31,19 @@ def listen():
                         print("Update time request SUCCESS")
                     else:
                         print("Update time request FAILED")
-                elif messageType == 2:  # Ping request
+                elif msg == "ping":  # Ping request
                     print("Ping request")
+                    machine_list = json.dumps({
+                        "machines": [dump(machine) for machine in ping_all_machines()],
+                        "dest": "external"
+                    }).encode()
+                    s.sendall(machine_list)
+
+
+# Turn machine query to JSON format
+def dump(machine):
+    return {"name": machine.name, "active": machine.active, "ip": machine.ip, "mac": machine.mac,
+            "machine_type": machine.machine_type}
 
 
 def start_listener_daemon():

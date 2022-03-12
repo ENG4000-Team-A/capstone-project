@@ -80,9 +80,9 @@ class ServerSocket:
         """
         recv_data = sock.recv(1024)
         if recv_data:
-            print("Recieved: ",recv_data.decode())
+            print("Recieved: ", recv_data.decode())
             dcd_recv_data = json.loads(recv_data.decode())
-            if 'conn_type' in dcd_recv_data.keys() :
+            if 'conn_type' in dcd_recv_data.keys():
                 if dcd_recv_data['conn_type'] == 1:
                     self.socket_recievers["django"] = data.cid
                 elif dcd_recv_data['conn_type'] == 2:
@@ -95,17 +95,16 @@ class ServerSocket:
                     dcd_recv_data['state'] = "response"
                 if 'dest' in dcd_recv_data.keys():
                     self.msg_queue.append(dcd_recv_data)
-                    print("Adding msg to queue = ",dcd_recv_data)
+                    print("Adding msg to queue = ", dcd_recv_data)
                 else:
                     print("Ignoring message. No dest specified")
         elif data.cid in self.socket_recievers:
-            pass    
+            pass
         else:
             print('Closing connection to', data.addr)
             self.sel.unregister(sock)
             sock.close()
 
-    
     def write_to_connection(self, sock, data):
         """Writes to a client socket
 
@@ -128,8 +127,7 @@ class ServerSocket:
                 sock.send(json.dumps(msg).encode())
                 print("Sent to cid {c}:".format(c=data.cid), msg)
 
-
-    def get_message(self, data, state): 
+    def get_message(self, data, state):
         """Retrieves a response for a client if there exists one.
 
         Parameters
@@ -148,7 +146,8 @@ class ServerSocket:
                 to_External = True
 
         for i in self.msg_queue:
-            if i["state"] == state and ((i["id"] == data.cid) or (to_Django and i["dest"] == "django") or (to_External and i["dest"] == "external")):
+            if i["state"] == state and ((i["id"] == data.cid) or (to_Django and i["dest"] == "django") or (
+                    to_External and i["dest"] == "external")):
                 msg = i
                 self.msg_queue.remove(i)
                 return msg
