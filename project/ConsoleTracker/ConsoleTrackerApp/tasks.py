@@ -8,29 +8,17 @@ import asyncio
 import time
 from kasa import Discover
 import sys
-from django.forms.models import model_to_dict
-from datetime import timedelta
 # Period in seconds in between syncing switches to machine state
 SYNC_PERIOD = 10
 
-
-# seperated out because nested function calls didnt work
-def turn_off_switch_help(ip):
-    asyncio.run(ConsoleSwitch(0, ip))
-
-
-def turn_on_switch_help(ip):
-    asyncio.run(ConsoleSwitch(1, ip))
-
-
 # runs kasa functions in another background thread
 def switch_off(ip):
-    t = Thread(target=turn_off_switch_help, args=(ip,))
+    t = Thread(target=ConsoleSwitch, args=(0, ip,))
     t.start()
 
 
 def switch_on(ip):
-    t = Thread(target=turn_on_switch_help, args=(ip,))
+    t = Thread(target=ConsoleSwitch, args=(1, ip,))
     t.start()
 
 
@@ -63,11 +51,11 @@ def update_user_time(username, new_time):
         # Adjust time if needed
         time_diff = abs(delta-new_time)
         if delta < new_time: # need to extend timer
-            active_timer.end_time += timedelta(seconds=time_diff)
+            active_timer.end_time += timezone.timedelta(seconds=time_diff)
             active_timer.init_Balance += time_diff
             
         elif delta > new_time: # need to reduce timer
-            active_timer.end_time -= timedelta(seconds=time_diff)
+            active_timer.end_time -= timezone.timedelta(seconds=time_diff)
             active_timer.init_Balance -= time_diff
 
         else: # unchanged
@@ -83,13 +71,13 @@ def ping_all_machines():
 
 
 # thread to update the time balance of the user
-def update_time_thread(socket):
+def update_time_thread(socket, now):
     # represents the seconds on the clock we will update time
     check_seconds = [00, 15, 30, 45]
     interval = 15
 
     # The current system time and the seconds of the current clock
-    curr_time = timezone.now()
+    curr_time = now
     clock_second = int(curr_time.strftime('%S'))
 
     # print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
@@ -119,41 +107,18 @@ def update_time_thread(socket):
                 print(f"updating {machine.user.username} time by {interval} seconds")
 
 
-def update_expired_machines():
+def update_expired_machines(now):
     # like an SQL SELECT where only looking for unexpired timers, from today,
     # with end_time before now
     query_set = User_uses_machine.objects.filter(
-        end_time__date=timezone.now().date(),
-        end_time__time__lte=timezone.now().time(),
+        end_time__date=now.date(),
+        end_time__time__lte=now.time(),
         expired=False)
     for query in query_set:
-        query.machine.active = False
-        query.machine.save()
-        query.expired = True
-        query.save()
-        query.user.time = 0
-        query.user.save()
-        stop_timer(query) #// would like to use this instead but currently broken due to negative time.
-        switch_off(query.machine.ip)
+        # using end_time since this is a natural ended imer
+        stop_timer(query, query.end_time)
         print(query.user.username + ' on ' + query.machine.name + ' ended at '
               + query.end_time.strftime("%m/%d/%Y, %H:%M:%S") + ', set to inactive')
-
-
-def set_new_endtimes():
-    """
-    Sets the endtime of timers to reflect the master user time balance from the external software.
-    Since user.time is set to 0 (akin to adding all their time to a timer),
-    when user.time > 0, it means master time balance has been updated and we must update the endtime.
-    """
-    query_set = User_uses_machine.objects.filter(
-        expired=False,
-        user__time__gt=0)
-    for query in query_set:
-        query.end_time = timezone.now() + timezone.timedelta(seconds=query.user.time)
-        query.user.time = 0
-        query.user.save()
-        query.save()
-        
 
 
 def query_time():
@@ -162,12 +127,13 @@ def query_time():
     socket = InternalSocket()
 
     while True:
-        #update_time_thread(socket)
-        send_notifications()
+        # syncing timezone.now between all functions called here
+        now = timezone.now()
+        update_time_thread(socket, now)
+        send_notifications(now)
         # like an SQL SELECT where only looking for unexpired timers, from today,
         # with end_time before now
-        #set_new_endtimes()
-        update_expired_machines()
+        update_expired_machines(now)
         if i >= SYNC_PERIOD:
             i = 0
             t = Thread(target=sync_switch_states)
@@ -207,7 +173,7 @@ def sync_switch_states():
                 print('New machine: "' + dev.alias + '" added.')
 
 
-def send_notifications():
+def send_notifications(now):
     active_machines = User_uses_machine.objects.filter(
         expired=False
     )
@@ -217,7 +183,7 @@ def send_notifications():
         if len(machine.user.phone_number) == 10:
             # country code for Canada and US, will need proper way to get for other countries
             country_code = "+1"
-            timer = int((machine.end_time - timezone.now()).total_seconds())
+            timer = int((machine.end_time - now).total_seconds())
             if timer in NOTIF_TIMES:
                 msg = str(int(timer / 60)) + " minutes remaining on " + machine.machine.name + "."
                 msg += '\nPlease use website for accurate timer.'
@@ -225,9 +191,8 @@ def send_notifications():
                 t = Thread(target=sendSMS, args=(country_code + machine.user.phone_number, msg,))
                 t.setName('SMS')
                 t.start()
-
-
-def stop_timer(active_timer: User_uses_machine):
+                
+def stop_timer(active_timer :User_uses_machine, now):
     """
     Sets endtime of an active timer to now.
     Sets users time to remaining timer value.
@@ -244,7 +209,7 @@ def stop_timer(active_timer: User_uses_machine):
     print("Start time = {st}, Endtime = {et}, Initial Balance = {eb}".format(st=active_timer.start_time,
                                                                              et=active_timer.end_time,
                                                                              eb=active_timer.init_Balance))
-    new_endtime = timezone.now()
+    new_endtime = now
     print("New Endtime = {nt}".format(nt=new_endtime))
     active_timer.end_time = new_endtime
     active_timer.expired = True
@@ -257,6 +222,7 @@ def stop_timer(active_timer: User_uses_machine):
     active_timer.save()
     active_timer.user.save()
     active_timer.machine.save()
+    switch_off(active_timer.machine.ip)
 
 
 def start_query_daemon():
