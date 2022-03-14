@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from .models import Machine, User, User_uses_machine
 from .tasks import switch_on, switch_off, stop_timer
 from django.forms.models import model_to_dict
-
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
@@ -67,7 +67,7 @@ def timer(request, uname):
             data = json.loads(request.body)
             if 'action' in data:
                 if data['action'] == "stop":
-                    stop_timer(user_uses_machine)
+                    stop_timer(user_uses_machine, timezone.now())
                     return  JsonResponse({'data': "stopped"})
                 else:
                     return  JsonResponse({'data': "invalid action"})

@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from .scripts.SwitchScript import ConsoleSwitch
+
 '''
     TimeStamp (Model)
         - hours = positive integer field
@@ -110,6 +112,5 @@ def on_creation_uses(sender, instance, created, **kwargs):
 
         instance.end_time = instance.start_time + timezone.timedelta(seconds=instance.user.time)
         instance.save()
-        
-        instance.user.time = 0
-        instance.user.save()
+
+        ConsoleSwitch(1, instance.machine.ip)
