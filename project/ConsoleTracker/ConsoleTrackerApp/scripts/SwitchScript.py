@@ -5,20 +5,20 @@ from kasa import Discover
 
 
 # This function discovers all the IP's and switch names
-async def findDevices():
+def findDevices():
     found_devices = asyncio.run(Discover.discover())
     return found_devices
 
 
 #  This function takes in the IP address and state of a switch to then turn it on/off
-async def ConsoleSwitch(state, IP):
+def ConsoleSwitch(state, IP):
     plug = SmartPlug(IP)
     try:
         if state == 1:
-            await plug.turn_on()
+            asyncio.run(plug.turn_on())
             return "plug On"
         elif state == 0:
-            await plug.turn_off()
+            asyncio.run(plug.turn_off())
             return "plug Off"
         else:
             return "failer"
