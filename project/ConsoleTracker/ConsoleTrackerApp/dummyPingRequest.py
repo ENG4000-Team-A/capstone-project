@@ -23,4 +23,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
     data = s.recv(1024)
     data = json.loads(data.decode())
-    print("Response : " + data)
+    print("Response : ", data["machines"])

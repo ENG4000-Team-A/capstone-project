@@ -33,11 +33,9 @@ def listen():
                         print("Update time request FAILED")
                 elif msg == "ping":  # Ping request
                     print("Ping request")
-                    machine_list = json.dumps({
-                        "machines": [dump(machine) for machine in ping_all_machines()],
-                        "dest": "external"
-                    }).encode()
-                    s.sendall(machine_list)
+                    data["dest"] = "external"
+                    data["machines"] = [dump(machine) for machine in ping_all_machines()]
+                    s.sendall(json.dumps(data).encode())
 
 
 # Turn machine query to JSON format
