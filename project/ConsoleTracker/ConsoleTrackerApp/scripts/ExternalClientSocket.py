@@ -34,7 +34,7 @@ time_db = {
 # inner for reading socket
 while True:
     try:
-        s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(5)
         s.connect((HOST, PORT))
         initMsg = {"conn_type": 2}
@@ -49,8 +49,10 @@ while True:
                     # seperate the message types
                     if data["msg"] == "timer_update":
                         if data["username"] in time_db:
-                            time_db[data["username"]] -= data["time"]
+                            time_db[data["username"]] -= data["timeDelta"]
                             print(time_db)
+                            data["dest"] = "django"
+                            data["timeBalance"] = time_db[data["username"]]
                     else:
                         if data["username"] in user_db:  # Check if username exists
                             if user_db[data["username"]] == data["password"]:  # Is password correct?

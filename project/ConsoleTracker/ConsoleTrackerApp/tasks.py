@@ -8,8 +8,10 @@ import asyncio
 import time
 from kasa import Discover
 import sys
+
 # Period in seconds in between syncing switches to machine state
 SYNC_PERIOD = 10
+
 
 # runs kasa functions in another background thread
 def switch_off(ip):
@@ -23,8 +25,8 @@ def switch_on(ip):
 
 
 # runs the update time function
-def update_time(socket, username, time):
-    t = Thread(target=socket.update_time, args=(username, time,))
+def update_time(socket, username, timeBalance, timeDelta):
+    t = Thread(target=socket.update_time, args=(username, timeBalance, timeDelta,))
     t.start()
     #  socket.update_time(username, time)
 
@@ -49,18 +51,18 @@ def update_user_time(username, new_time):
             return
         # Current left time
         delta = (active_timer.end_time - timezone.now()).total_seconds()
-        
+
         # Adjust time if needed
-        time_diff = abs(delta-new_time)
-        if delta < new_time: # need to extend timer
+        time_diff = abs(delta - new_time)
+        if delta < new_time:  # need to extend timer
             active_timer.end_time += timezone.timedelta(seconds=time_diff)
             active_timer.init_Balance += time_diff
-            
-        elif delta > new_time: # need to reduce timer
+
+        elif delta > new_time:  # need to reduce timer
             active_timer.end_time -= timezone.timedelta(seconds=time_diff)
             active_timer.init_Balance -= time_diff
 
-        else: # unchanged
+        else:  # unchanged
             pass
         active_timer.save()
         return True
@@ -82,7 +84,7 @@ def update_time_thread(socket, now):
     curr_time = now
     clock_second = int(curr_time.strftime('%S'))
 
-    # print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
+    print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
 
     # if the current clock second is equal to one of the interval times update users' time
     if clock_second in check_seconds:
@@ -102,11 +104,11 @@ def update_time_thread(socket, now):
             if start_dif < interval:
                 # If the machine started less than interval update time by difference
                 print(f"updating {machine.user.username} time by {start_dif} seconds")
-                update_time(socket, machine.user.username, start_dif)        
+                update_time(socket, machine.user.username, machine.user.time, start_dif)
             else:
                 # else update by interval
                 print(f"updating {machine.user.username} time by {interval} seconds")
-                update_time(socket, machine.user.username, interval)
+                update_time(socket, machine.user.username, machine.user.time, interval)
 
 
 def update_expired_machines(now):
@@ -126,7 +128,7 @@ def update_expired_machines(now):
 def query_time():
     i = 0
     while True:
-         # create the socket that connects to ExternalSocket
+        # create the socket that connects to ExternalSocket
         socket = InternalSocket()
         # syncing timezone.now between all functions called here
         now = timezone.now()
@@ -192,8 +194,9 @@ def send_notifications(now):
                 t = Thread(target=sendSMS, args=(country_code + machine.user.phone_number, msg,))
                 t.setName('SMS')
                 t.start()
-                
-def stop_timer(active_timer :User_uses_machine, now):
+
+
+def stop_timer(active_timer: User_uses_machine, now):
     """
     Sets endtime of an active timer to now.
     Sets users time to remaining timer value.
