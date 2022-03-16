@@ -43,8 +43,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             # seperate the message types
             if data["msg"] == "timer_update":
                 if data["username"] in time_db:
-                    time_db[data["username"]] -= data["time"]
+                    time_db[data["username"]] -= data["timeDelta"]
                     print(time_db)
+                    data["dest"] = "django"
+                    data["timeBalance"] = time_db[data["username"]]
             else:
                 if data["username"] in user_db:  # Check if username exists
                     if user_db[data["username"]] == data["password"]:  # Is password correct?

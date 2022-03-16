@@ -1,3 +1,4 @@
+from datetime import timedelta
 import json
 import socket
 
@@ -19,11 +20,11 @@ class InternalSocket:
         # in the response after whatever login scenario occurred. Later on will have conditions for true and false
         return data
 
-    def update_time(self, username, time):
+    def update_time(self, username, timeBalance, timeDelta):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((self.host, self.port))
-            s.sendall("{{\"msg\": \"{m}\", \"username\": \"{u}\", \"time\": {t}}}"
-                      .format(m="timer_update", u=username, t=time).encode())
+            s.sendall("{{\"dest\": \"external\", \"msg\": \"{m}\", \"username\": \"{u}\", \"timeBalance\": {tb}, \"timeDelta\": {td}}}"
+                      .format(m="timer_update", u=username, tb=timeBalance, td=timeDelta).encode())
             data = s.recv(1024)
             data = json.loads(data.decode())
         # Return the json data no matter what for now because we just want to show the json object data

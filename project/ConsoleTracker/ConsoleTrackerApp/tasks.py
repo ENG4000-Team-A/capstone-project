@@ -23,8 +23,8 @@ def switch_on(ip):
 
 
 # runs the update time function
-def update_time(socket, username, time):
-    return socket.update_time(username, time)
+def update_time(socket, username, timeBalance, timeDelta):
+    return socket.update_time(username, timeBalance, timeDelta)
 
 
 # Updates a users time upon request form opus
@@ -80,7 +80,7 @@ def update_time_thread(socket, now):
     curr_time = now
     clock_second = int(curr_time.strftime('%S'))
 
-    # print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
+    print(f"{curr_time.strftime('%S')} {clock_second in check_seconds}", end="\r")
 
     # if the current clock second is equal to one of the interval times update users' time
     if clock_second in check_seconds:
@@ -99,11 +99,11 @@ def update_time_thread(socket, now):
 
             if start_dif < interval:
                 # If the machine started less than interval update time by difference
-                update_time(socket, machine.user.username, start_dif)
+                update_time(socket, machine.user.username, machine.user.time, start_dif)
                 print(f"updating {machine.user.username} time by {start_dif} seconds")
             else:
                 # else update by interval
-                update_time(socket, machine.user.username, interval)
+                update_time(socket, machine.user.username, machine.user.time, interval)
                 print(f"updating {machine.user.username} time by {interval} seconds")
 
 
@@ -192,6 +192,7 @@ def send_notifications(now):
                 t.setName('SMS')
                 t.start()
                 
+
 def stop_timer(active_timer :User_uses_machine, now):
     """
     Sets endtime of an active timer to now.
