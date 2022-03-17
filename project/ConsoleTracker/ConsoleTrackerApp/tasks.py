@@ -28,6 +28,7 @@ def switch_off(ip):
     t = Thread(target=turn_off_switch_help, args=(ip,))
     t.start()
 
+
 def switch_on(ip):
     t = Thread(target=turn_on_switch_help, args=(ip,))
     t.start()
@@ -40,10 +41,22 @@ def update_time(socket, username, time):
 
 # Updates a users time upon request form opus
 def update_user_time(username, new_time):
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = None
+
+    # Update the user time if exists
     if user is not None:
         user.time = new_time
         user.save()
+        return True
+    return False
+
+
+# Ping all machines in the system
+def ping_all_machines():
+    return list(Machine.objects.all())
 
 
 # thread to update the time balance of the user
@@ -133,12 +146,12 @@ def sync_switch_states():
     for addr, dev in devices.items():  # addr is ip address, dev is SmartDevice
         if dev.is_plug:
             try:
-                m = Machine.objects.get(mac=dev.mac)    # try to get matching row in table
-                if m.ip != addr: # correcting IP if it's old/wrong
+                m = Machine.objects.get(mac=dev.mac)  # try to get matching row in table
+                if m.ip != addr:  # correcting IP if it's old/wrong
                     m.ip = addr
                     m.save()
                     print("IP for " + m.name + " changed to " + str(addr))
-                else:   #matching switch states to machine states
+                else:  # matching switch states to machine states
                     if dev.is_on and not m.active:
                         asyncio.run(dev.turn_off())
                         print("Shutting down machine with ip: {ip}".format(ip=addr))
@@ -146,9 +159,9 @@ def sync_switch_states():
                         asyncio.run(dev.turn_on())
                         print("Powering on machine with ip: {ip}".format(ip=addr))
                     # else:
-                        # print("State okay")
+                    # print("State okay")
             except:
-                Machine.objects.create(name=dev.alias, mac=dev.mac, ip=addr)    #add new row
+                Machine.objects.create(name=dev.alias, mac=dev.mac, ip=addr)  # add new row
                 print('New machine: "' + dev.alias + '" added.')
 
 
@@ -170,8 +183,9 @@ def send_notifications():
                 t = Thread(target=sendSMS, args=(country_code + machine.user.phone_number, msg,))
                 t.setName('SMS')
                 t.start()
-                
-def stop_timer(active_timer :User_uses_machine):
+
+
+def stop_timer(active_timer: User_uses_machine):
     """
     Sets endtime of an active timer to now.
     Sets users time to remaining timer value.
@@ -185,7 +199,9 @@ def stop_timer(active_timer :User_uses_machine):
     active_timer.user.time = delta.total_seconds()
     active_timer.user.save()
     """
-    print("Start time = {st}, Endtime = {et}, Initial Balance = {eb}".format(st=active_timer.start_time, et=active_timer.end_time, eb=active_timer.init_Balance))
+    print("Start time = {st}, Endtime = {et}, Initial Balance = {eb}".format(st=active_timer.start_time,
+                                                                             et=active_timer.end_time,
+                                                                             eb=active_timer.init_Balance))
     new_endtime = timezone.now()
     print("New Endtime = {nt}".format(nt=new_endtime))
     active_timer.end_time = new_endtime
