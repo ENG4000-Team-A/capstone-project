@@ -137,12 +137,18 @@ def getMachines(request):
 def getUsers(request):
     uname = request.GET.get('uname', None)
     if uname is not None:
-        user = None
         try:
-            user = model_to_dict(User.objects.get(username=uname))
+            user = User.objects.get(username=uname)
+            json = model_to_dict(User.objects.get(username=uname))
+            try: # check if user is using a machine
+                timer = User_uses_machine.objects.get(user=user, expired=False)
+                machine = timer.machine.name
+            except:
+                machine = "None"  
+            json["machine"] = machine  
         except Exception as e:
-            user = {}
-        return JsonResponse({'data': user})
+            json = {}
+        return JsonResponse({'data':json})
     return JsonResponse({'data': list(User.objects.all().values())})
 
 
