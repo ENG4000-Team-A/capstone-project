@@ -1,0 +1,17 @@
+[Unit]
+Description=ConsoleTrackerApp daemon
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+Environment="SECRET_KEY=blahblah"
+WorkingDirectory={{ project_path }}/project/ConsoleTracker
+ExecStart=/usr/local/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          ConsoleTracker.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

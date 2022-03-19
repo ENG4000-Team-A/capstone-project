@@ -1,0 +1,104 @@
+
+- shell: 
+    cmd: 'curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -'
+  ignore_errors: yes
+- name: Install required packages
+  apt:
+    name:
+      - nginx
+      - nodejs
+      - node-gyp
+      - libssl1.0-dev
+    update_cache: yes
+    force_apt_get: yes
+  ignore_errors: yes
+
+- copy:
+    src: requirements.txt
+    dest: /root
+    owner: root
+    group: root
+    mode: 0644
+
+- pip:
+    requirements: /root/requirements.txt
+    executable: pip3
+
+
+- file:
+    path: /var/www/consoletracker
+    state: directory
+
+
+- shell:
+    cmd: npm run build
+    chdir: "{{ project_path }}/project/frontend"
+
+- copy:
+    src: "{{ project_path }}/project/frontend/build/"
+    dest: /var/www/consoletracker
+
+
+- name: Copy ConsoleTracker systemd service
+  template:
+    src: ConsoleTracker.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy nginx config
+  copy:
+    src: nginx_conf
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: 0644
+
+# add ufw rules after
+
+- file:
+    path: /usr/local/prometheus
+    state: directory
+
+
+- name: Get nginx exporter
+  get_url:
+    url: "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v0.9.0/nginx-prometheus-exporter_0.9.0_linux_armv7.tar.gz"
+    dest: /usr/local/prometheus/
+
+- unarchive:
+    src: '/usr/local/prometheus/nginx-prometheus-exporter_0.9.0_linux_armv7.tar.gz'
+    dest: /usr/local/prometheus
+    owner: root
+    group: root
+    mode: 0755
+
+
+- name: copy nginx-exporter service
+  copy:
+    src: nginx-exporter.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+    mode: 0644
+
+
+- name: Start ConsoleTracker service
+  service:
+    name: ConsoleTracker
+    state: started
+    enabled: yes
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
+
+- name: Start nginx exporter
+  service:
+    name: nginx-exporter
+    state: started
+    enabled: yes
+
