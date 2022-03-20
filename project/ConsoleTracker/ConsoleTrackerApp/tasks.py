@@ -63,7 +63,6 @@ def update_user_time(username, new_time):
     active_timer.save()
 
 
-
 # Ping all machines in the system
 def ping_all_machines():
     return list(Machine.objects.all())
@@ -190,6 +189,7 @@ def send_notifications(now):
                 t = Thread(target=sendSMS, args=(country_code + machine.user.phone_number, msg,))
                 t.setName('SMS')
                 t.start()
+                
                 
 def stop_timer(active_timer :User_uses_machine, now):
     """

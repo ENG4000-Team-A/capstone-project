@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -43,24 +47,25 @@ theme.typography.h6 = {
   },
 };
 
-
 function TopMenu({ auth }) {
-
-  const [anchorEl, setAnchorEl] = useState(true);
-  const open = Boolean(anchorEl);
-
   const navigate = useNavigate();
-  const pages = [
-    { name: 'Home', to: '/' },
-    { name: 'Game Stations', to: '/machines' },
-    { name: 'My Timer', to: '/timer' }
-  ];
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
   };
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   const handleLogout = () => {
@@ -69,95 +74,122 @@ function TopMenu({ auth }) {
     window.location.reload();
   };
 
+  const pages = [
+    { name: 'Home', to: '/' },
+    { name: 'Game Stations', to: '/machines' },
+    { name: 'My Timer', to: '/timer' }
+  ];
+
   return (
     <AppBar position="static">
-      <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2 }}
-        >
-          <MenuIcon />
-        </IconButton>
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
 
-        {/* Temporary Fix */}
-        <ThemeProvider theme={theme}>
-          <Typography variant="h3" component="div" sx={{ flexGrow: 1 }}>
-            ConsoleTracker
-          </Typography>
-        </ThemeProvider>
+          {/* Temporary Fix */}
+          <ThemeProvider theme={theme}>
+            <Typography variant="h3" component="div" sx={{ flexGrow: 1 }}>
+              ConsoleTracker
+            </Typography>
+          </ThemeProvider>
 
-        {!auth &&
-          <Link to="/login" style={{ textDecoration: 'none' }}>
-            <MenuItem key='login'>
-              <Typography textAlign="center">Login</Typography>
-            </MenuItem>
-          </Link>
-        }
-
-        {auth && (
-          <div>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleClick}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={open}
-              onClose={handleClose}
-              onClick={handleClose}
-            >
-
-               {/* Temporary Measure */}
-              <MenuItem onClick={handleClose}>
-
-                <Typography textAlign="center" variant='h6'>
-                  My account
-                </Typography>
-
+          {!auth &&
+            <Link to="/login" style={{ textDecoration: 'none' }}>
+              <MenuItem key='login'>
+                <Typography textAlign="center">Login</Typography>
               </MenuItem>
-             
-              {auth && pages.map((page) => (
-                <Link to={page.to} style={{ textDecoration: 'none' }}>
-                  <MenuItem key={page.name} onClick={handleClose}>
-                    <ThemeProvider theme={theme}>
-                      <Typography textAlign="center" variant="h6">
-                        {page.name}
-                        </Typography>
-                    </ThemeProvider>
+            </Link>
+          }
+
+          {auth && (
+            <div>
+              <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleOpenNavMenu}
+                  color="inherit"
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorElNav}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  open={Boolean(anchorElNav)}
+                  onClose={handleCloseNavMenu}
+                  sx={{
+                    display: { xs: 'block', md: 'none' },
+                  }}
+                >
+                  {pages.map((page) => (
+                    <Link to={page.to} style={{ textDecoration: 'none' }}>
+                      <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                        <ThemeProvider theme={theme}>
+                          <Typography textAlign="center">{page.name}</Typography>
+                        </ThemeProvider>
+                      </MenuItem>
+                    </Link>
+                  ))}
+                  <MenuItem onClick={handleLogout}>
+                    <Typography textAlign="center">
+                      Logout
+                    </Typography>
                   </MenuItem>
-                </Link>
-              ))}
+                </Menu>
+              </Box>
+              <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                {pages.map((page) => (
+                  <Link to={page.to} style={{ textDecoration: 'none' }}>
+                    <Button
+                      key={page.name}
+                      onClick={handleCloseNavMenu}
+                      sx={{ my: 2, color: 'white', display: 'block' }}
+                    >
+                      {page.name}
+                    </Button>
+                  </Link>
+                ))}
+                <Button
+                  onClick={handleLogout}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                    >
+                    Logout
+                </Button>
+              </Box>
 
-              <MenuItem onClick={handleLogout}>
-
-                <Typography textAlign="center" variant='h6'>
-                  Logout
-                </Typography>
-
-              </MenuItem>
-            </Menu>
-          </div>
-        )}
-      </Toolbar>
+              <Box sx={{ flexGrow: 0 }}>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                </Menu>
+              </Box>
+            </div>
+          )}
+        </Toolbar>
+      </Container>
     </AppBar>
   )
 }

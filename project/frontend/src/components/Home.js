@@ -7,6 +7,7 @@ function Home({auth}) {
 
     const [name, setName] = useState(null);
     const [userInfo, setInfo] = useState({
+        machine: "",
         first_name: "",
         id: 0,
         last_name: "",
@@ -62,16 +63,13 @@ function Home({auth}) {
                   <div class="col-sm-12 col-6">
                     <div class="card dark">
                       <h3 class="light-header"> Current Console </h3>
-                      <h3> Machine xyz </h3>
+                      <h3> {userInfo.machine} </h3>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        <div>Hello {userInfo.first_name} {userInfo.last_name}! <br/> Phone No: {userInfo.phone_number}
-        <br/> Time: {userInfo.time / 60} minutes
-        </div>
         </div>
       }
       {!auth &&
