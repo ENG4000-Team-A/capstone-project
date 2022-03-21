@@ -192,7 +192,6 @@ def send_notifications(now):
                 t.setName('SMS')
                 t.start()
                 
-
 def stop_timer(active_timer :User_uses_machine, now):
     """
     Sets endtime of an active timer to now.
@@ -210,7 +209,7 @@ def stop_timer(active_timer :User_uses_machine, now):
     print("Start time = {st}, Endtime = {et}, Initial Balance = {eb}".format(st=active_timer.start_time,
                                                                              et=active_timer.end_time,
                                                                              eb=active_timer.init_Balance))
-    new_endtime = timezone.now()
+    new_endtime = now
     print("New Endtime = {nt}".format(nt=new_endtime))
     active_timer.end_time = new_endtime
     active_timer.expired = True
