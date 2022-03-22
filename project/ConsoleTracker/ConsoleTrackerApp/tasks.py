@@ -99,12 +99,12 @@ def update_time_thread(socket, now):
 
             if start_dif < interval:
                 # If the machine started less than interval update time by difference
-                update_time(socket, machine.user.username, start_dif)
                 print(f"updating {machine.user.username} time by {start_dif} seconds")
+                update_time(socket, machine.user.username, start_dif)        
             else:
                 # else update by interval
-                update_time(socket, machine.user.username, interval)
                 print(f"updating {machine.user.username} time by {interval} seconds")
+                update_time(socket, machine.user.username, interval)
 
 
 def update_expired_machines(now):
@@ -123,10 +123,9 @@ def update_expired_machines(now):
 
 def query_time():
     i = 0
-    # create the socket that connects to ExternalSocket
-    socket = InternalSocket()
-
     while True:
+         # create the socket that connects to ExternalSocket
+        socket = InternalSocket()
         # syncing timezone.now between all functions called here
         now = timezone.now()
         update_time_thread(socket, now)
