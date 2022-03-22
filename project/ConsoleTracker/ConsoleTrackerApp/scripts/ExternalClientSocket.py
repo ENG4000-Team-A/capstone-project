@@ -35,42 +35,48 @@ time_db = {
 while True:
     try:
         s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(5)
         s.connect((HOST, PORT))
         initMsg = {"conn_type": 2}
         s.sendall(json.dumps(initMsg).encode())
         while True:
-            data = s.recv(1024)
-            if data:
-                print(data)
-                data = json.loads(data.decode())
-                data["dest"] = "django"
-                # seperate the message types
-                if data["msg"] == "timer_update":
-                    if data["username"] in time_db:
-                        time_db[data["username"]] -= data["time"]
-                        print(time_db)
-                else:
-                    if data["username"] in user_db:  # Check if username exists
-                        if user_db[data["username"]] == data["password"]:  # Is password correct?
-                            data["usernameExists"] = True
-                            data["validPassword"] = True
-                            data["firstName"] = "Chris"
-                            data["lastName"] = "Smith"
-                            data["phoneNumber"] = 6475128443
-                            data["timeRemaining"] = 5.344
-                        else:  # Password is incorrect
-                            data["usernameExists"] = True
+            try:
+                data = s.recv(1024)
+                if data:
+                    print(data)
+                    data = json.loads(data.decode())
+                    data["dest"] = "django"
+                    # seperate the message types
+                    if data["msg"] == "timer_update":
+                        if data["username"] in time_db:
+                            time_db[data["username"]] -= data["time"]
+                            print(time_db)
+                    else:
+                        if data["username"] in user_db:  # Check if username exists
+                            if user_db[data["username"]] == data["password"]:  # Is password correct?
+                                data["usernameExists"] = True
+                                data["validPassword"] = True
+                                data["firstName"] = "Chris"
+                                data["lastName"] = "Smith"
+                                data["phoneNumber"] = 6475128443
+                                data["timeRemaining"] = 5.344
+                            else:  # Password is incorrect
+                                data["usernameExists"] = True
+                                data["validPassword"] = False
+                        else:  # Username does not exist
+                            data["usernameExists"] = False
                             data["validPassword"] = False
-                    else:  # Username does not exist
-                        data["usernameExists"] = False
-                        data["validPassword"] = False
-                s.sendall(json.dumps(data).encode())
-            else:                
-                # only reached if serversocket is closed
-                # break loop to restart client
-                break
+                    s.sendall(json.dumps(data).encode())
+                else:                
+                    # only reached if serversocket is closed
+                    # break loop to restart client
+                    break
+            except socket.timeout:
+                pass
     except KeyboardInterrupt:
+        print("Socket closed.")
         s.close()
         sys.exit(0)
     except ConnectionError:
+        print("Connection Lost. Reconnecting..")
         s.close()
