@@ -24,7 +24,9 @@ def switch_on(ip):
 
 # runs the update time function
 def update_time(socket, username, time):
-    return socket.update_time(username, time)
+    t = Thread(target=socket.update_time, args=(username, time,))
+    t.start()
+    #  socket.update_time(username, time)
 
 
 # Updates a users time upon request form opus
