@@ -6,6 +6,7 @@ from socket import AF_INET, SOCK_STREAM
 from selectors import EVENT_READ, EVENT_WRITE
 from types import SimpleNamespace
 import json
+import sys
 
 HOST = '127.0.0.1'
 PORT = 5073
@@ -40,17 +41,28 @@ class ServerSocket:
         """Main function starting the socket server"""
         print("Starting server...")
         while True:
-            events = self.sel.select(timeout=None)
-            for key, mask in events:
-                sock = key.fileobj
-                if key.data is None:
-                    self.accept_client(sock)
-                else:
-                    data = key.data
-                    if mask & EVENT_READ:
-                        self.read_connection(sock, data)
-                    if mask & EVENT_WRITE:
-                        self.write_to_connection(sock, data)
+            try:
+                events = self.sel.select(timeout=None)
+                for key, mask in events:
+                    sock = key.fileobj
+                    if key.data is None:
+                        self.accept_client(sock)
+                    else:
+                        data = key.data
+                        if mask & EVENT_READ:
+                            self.read_connection(sock, data)
+                        if mask & EVENT_WRITE:
+                            self.write_to_connection(sock, data)
+            # close on Ctrl-C
+            except KeyboardInterrupt:
+                sys.exit(0)
+            # disconnect all sockets and return for restarting server
+            except ConnectionError:
+                events = self.sel.select()
+                for key, _ in events:
+                    self.sel.unregister(key.fileobj)
+                self.lsock.close()
+                return
 
     def accept_client(self, sock):
         """Handles a new client to the socket
@@ -155,10 +167,12 @@ class ServerSocket:
 
 
 if __name__ == "__main__":
-    config_data = None
-    with open('config.json', 'r') as f:
-        config_data = json.load(f)
-    print(config_data['external_client_ipv4'])
-
-    server = ServerSocket()
-    server.start()
+    # restart the server whenever a client disconnects
+    while True:
+        try:
+            server = ServerSocket()
+            server.start()
+        except KeyboardInterrupt:
+            sys.exit(0)
+        except ConnectionError:
+            pass
