@@ -1,11 +1,14 @@
-/* .machinecard__container {
-    border:1px solid green;
-} */
-
 div.machinecard__container {
-    padding-top: 25px;
-    padding-right: 25px;
-    padding-bottom: 25px;
-    padding-left: 25px;   
+    padding-top: 1%;
+    padding-right: 1%;
+    padding-bottom: 1%;
+    padding-left: 1%;   
 }
 
+div.machinecardName__container {
+
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+}

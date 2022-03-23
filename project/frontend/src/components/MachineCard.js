@@ -17,24 +17,31 @@ Relative imports outside of src/ are not supported. You can either move the imag
 Images currently does not fit in to the card. Will resize it when dummy information are replaced.
 */
 
-import ps5_logo from "../image/PS5_logo_placeholder.png";
-import xboxSeriesXLogo from "../image/XBox_Series_placeholder.png"; // xbox version
-import error from "../image/Error.png";
+import ps5_logo from "../image/Playstation_1280x_720.jpg";
+import xboxSeriesXLogo from "../image/Xbox_1280x_720.jpg"; // xbox version
+import nintendoLogo from "../image/Nintendo_1280x_720.jpg";
+import error from "../image/Error_1280x_720.jpg";
 
 import { useNavigate } from "react-router-dom";
-
-
-
 
 function returnConsoleImage (console_name) {
   switch(console_name) {
     case "PS4": return ps5_logo;
     case "Xbox 1": return xboxSeriesXLogo;
+    case "Nintendo": return nintendoLogo;
     default: return error;
   }
 }
 
-function MachineCard({machineId,name,status,machineType,...props}) {
+function returnStatus (status) {
+  switch(status) {
+    case false: return "Available";
+    case true: return "Unavailable"
+  }
+}
+
+
+function MachineCard({machineId,name,status,machineType, screenWidth, screenHeight,...props}) {
  
   let navigate = useNavigate();
 
@@ -42,31 +49,51 @@ function MachineCard({machineId,name,status,machineType,...props}) {
     navigate(`/machines/${machineId}`);
   }
 
+  var cardHeight;
+
+  // considered a modest sized screen
+  // cards will shrink a bit for if the dimension is quite small. Is done to prevent having too large of a card rendered on a mobile.
+  if (screenWidth > 700 && screenHeight > 500 ) {
+    cardHeight = "200";
+  } else {
+    cardHeight = "125";
+  }
+
+  
+
   return (
 
     // Part Division
     <div className="machinecard__container">
-       {name}
-      <Card sx={{ maxWidth: 500 }}>
+    
+      <Card variant="outlined" sx={{ maxWidth: 500 }}>
         <CardMedia
           component="img"
-          height="100"
+          height={cardHeight}
           image={returnConsoleImage(machineType)}
           alt="logo"
         />
-        Status: {String(status)}
 
+        <div className="machinecardName__container">
+          <Typography variant="h5">
+          {name}
+          </Typography>
+
+        </div>
+      
         <div className="card__actions">
           <CardActions>
               {/* Does Certain Action When Button is Pressed! */}
               <Button
                 variant="contained"
+                fullWidth
                 onClick={() => {
                   Machine_Card_Selected();
                 }}
                 disabled={status}
               >
-                Available
+                {/* Available */}
+                {String(returnStatus(status))}
               </Button>
               
           </CardActions>
