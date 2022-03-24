@@ -5,13 +5,13 @@ import axios from 'axios';
 import './Timer.css'
 import { modalClasses, modalUnstyledClasses } from '@mui/material';
 
-const API_URL = "http://127.0.0.1:8000/timer/" + localStorage.getItem("user");
+const API_URL = "http://127.0.0.1:8000/timer/";
 const BASE_URL = "http://127.0.01:8000/"
 var timer
 var remainingTime
 var then
 
-function StopTimer(user) {
+function StopTimer() {
   /**When STOP button is pressed:
    *  POST request with action: "stop" sent to stop timer
    *  Then redirects back to home
@@ -19,12 +19,24 @@ function StopTimer(user) {
 
   // POST request to change end time
   // NOTE: Stopping early does not reflect an accurate amount of time to the model
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", API_URL, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(JSON.stringify({
-      "action": "stop"
-  }));
+  
+
+  axios.post(API_URL, {
+                action: "stop"
+            },
+            {
+                headers: {
+                  Authorization: localStorage.getItem("authToken")
+                }
+            }
+            ).then(function (response) {
+              console.log(response);
+              
+          })
+            .catch(function (error) {
+                console.log(error);
+            });
+      
 }
 
 function startCountdown(id){
@@ -58,7 +70,12 @@ function Timer_Function() {
 
   useEffect(()=>{
       // User Uses Machine
-      axios.get(API_URL
+      axios.get(API_URL,
+        {
+          headers: {
+            Authorization: localStorage.getItem("authToken")
+          }
+      }
       ).then(response => {
           setUserData(response.data.data);
           console.log(response.data.data)

@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
-
+from .auth import generateToken, getUsernameFromToken
 
 @csrf_exempt 
 def start_timer(request, id):
@@ -23,31 +23,34 @@ def start_timer(request, id):
         User_uses_machine new object or error message
     """
     if request.method == "POST":
-        try:
-            machine = Machine.objects.get(id=id)
-            data = json.loads(request.body)
-            if machine.active:
-                return JsonResponse({'data': "machine already active"})
-            if 'uname' in data:
-                user = User.objects.get(username=data['uname'])
+        uname = getUsernameFromToken(request)
+        if uname is not None:
+            try:
+                machine = Machine.objects.get(id=id)
+                #data = json.loads(request.body)
+                if machine.active:
+                    return JsonResponse({'data': "machine already active"})
+                    
+                user = User.objects.get(username=uname)
                 obj = User_uses_machine.objects.create(user=user, machine=machine, init_Balance=user.time)
                 # turns on the switch & set machine to active
                 machine.active = True
                 machine.save()
                 switch_on(machine.ip)   
                 return JsonResponse({'data': model_to_dict(obj)})
-            else:
-                return  JsonResponse({'data': "no username specified"})
-        except Exception as e:
-            print(e)
-            return JsonResponse({'data': str(e)})
+                
+            except Exception as e:
+                print(e)
+                return JsonResponse({'data': str(e)})
+        else:
+            return JsonResponse({'data': "Invalid Authentication"})
 
     else:
         return  JsonResponse({'data': "only post"})
   
 
 @csrf_exempt 
-def timer(request, uname):
+def timer(request):
     """
     Get current User_uses_machine or Stop timer.
 
@@ -59,25 +62,29 @@ def timer(request, uname):
             action:
                 Values: "stop" (for stopping)
     """
-    try:
-        user = User.objects.get(username=uname)
-        user_uses_machine = User_uses_machine.objects.get(user=user, expired=False)
-        # Enter the countdown only if the machine is active
-        if request.method == "POST":
-            data = json.loads(request.body)
-            if 'action' in data:
-                if data['action'] == "stop":
-                    stop_timer(user_uses_machine, timezone.now())
-                    return  JsonResponse({'data': "stopped"})
+    uname = getUsernameFromToken(request)
+    if uname is not None:
+        try:
+            user = User.objects.get(username=uname)
+            user_uses_machine = User_uses_machine.objects.get(user=user, expired=False)
+            # Enter the countdown only if the machine is active
+            if request.method == "POST":
+                data = json.loads(request.body)
+                if 'action' in data:
+                    if data['action'] == "stop":
+                        stop_timer(user_uses_machine, timezone.now())
+                        return  JsonResponse({'data': "stopped"})
+                    else:
+                        return  JsonResponse({'data': "invalid action"})
                 else:
-                    return  JsonResponse({'data': "invalid action"})
+                    return  JsonResponse({'data': "action was not passed"})
             else:
-                return  JsonResponse({'data': "action was not passed"})
-        else:
-            # if the machine is active get the relationship model with the user
-            return JsonResponse({'data':model_to_dict(user_uses_machine)})
-    except Exception as e:
-        return JsonResponse({'data': str(e)})
+                # if the machine is active get the relationship model with the user
+                return JsonResponse({'data':model_to_dict(user_uses_machine)})
+        except Exception as e:
+            return JsonResponse({'data': str(e)})
+    else:
+        return JsonResponse({'data': "Invalid Authentication"})
 
 
 @csrf_exempt
@@ -107,7 +114,9 @@ def login(request):
                                         first_name=data['firstName'], last_name=data['lastName'],
                                         phone_number=data["phoneNumber"])
                         new_user.save()
-                    return JsonResponse({"status": 'Successful Login',
+                    
+                    payload_data = {"username": data['username']}
+                    return JsonResponse({"status": 'Successful Login', "authToken": generateToken(payload_data)
                                          })
                 else:
                     return JsonResponse({"status": 'Credentials not valid'})
@@ -135,7 +144,7 @@ def getMachines(request):
 
 
 def getUsers(request):
-    uname = request.GET.get('uname', None)
+    uname = getUsernameFromToken(request)
     if uname is not None:
         try:
             user = User.objects.get(username=uname)
@@ -149,7 +158,7 @@ def getUsers(request):
         except Exception as e:
             json = {}
         return JsonResponse({'data':json})
-    return JsonResponse({'data': list(User.objects.all().values())})
+    return JsonResponse({'data': "Invalid Authentication"})
 
 
 def getUser(request):

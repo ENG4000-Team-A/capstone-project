@@ -20,7 +20,13 @@ function Home({auth}) {
     const username = localStorage.getItem("user");
     setName(username);
     console.log(username);
-    axios.get(`http://localhost:8000/users/?uname=${username}`)
+    axios.get('http://localhost:8000/users/',
+        {
+          headers: {
+            Authorization: localStorage.getItem("authToken")
+          }
+        }
+    )
         .then(response => {
             console.log(response.data.data);
             setInfo(response.data.data);

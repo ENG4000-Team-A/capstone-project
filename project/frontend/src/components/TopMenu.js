@@ -69,7 +69,8 @@ function TopMenu({ auth }) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("loginCookie");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
     navigate('/');
     window.location.reload();
   };
