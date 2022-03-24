@@ -18,7 +18,7 @@ function App() {
   const [auth, setAuth] = useState(false);
 
   useEffect(() => {
-    const cookieKey = localStorage.getItem("loginCookie");
+    const cookieKey = localStorage.getItem("authToken");
     if (cookieKey)
     {
       setAuth(true);

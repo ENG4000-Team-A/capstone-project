@@ -37,7 +37,7 @@ export default function SignIn() {
       alert(response.data.status);
       console.log(response.data.status);
       if (response.data.status === "Successful Login") {
-        localStorage.setItem('loginCookie', "fiajoesifs939fjj");
+        localStorage.setItem('authToken', response.data.authToken);
         localStorage.setItem('user', username);
         navigate("/");
       }

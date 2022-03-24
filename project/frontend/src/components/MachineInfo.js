@@ -35,10 +35,13 @@ function MachineInfo({ auth }) {
 
     }, []);
     useEffect(() => {
-        const username = localStorage.getItem("user");
-        //setName(username);
-        console.log(username);
-        axios.get(`http://localhost:8000/users/?uname=${username}`)
+        axios.get('http://localhost:8000/users/',
+        {
+          headers: {
+            Authorization: localStorage.getItem("authToken")
+          }
+        }
+        )
             .then(response => {
                 console.log(response.data.data);
                 SetUserInfo(response.data.data)
@@ -81,7 +84,13 @@ function MachineInfo({ auth }) {
         function SubmitPlay() {
             axios.post("http://localhost:8000/start_timer/" + id, {
                 uname: userInfo.username
-            }).then(function (response) {
+            },
+            {
+                headers: {
+                  Authorization: localStorage.getItem("authToken")
+                }
+            }
+            ).then(function (response) {
                 console.log(response);
                 var getUrl = window.location;
                 var redirect = getUrl.protocol + "//" + getUrl.host + "/" + "timer";

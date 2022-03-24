@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path('timer/<str:uname>', views.timer, name='timer'),
+                  path('timer/', views.timer, name='timer'),
                   path('start_timer/<int:id>', views.start_timer, name='start_timer'),
                   path('login/', views.login, name='login'),
                   path('machines/', views.getMachines, name='machines'),
