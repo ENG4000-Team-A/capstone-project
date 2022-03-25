@@ -1,0 +1,13 @@
+[Unit]
+Description=ExternalClientSocket
+After=network.target ServerSocket.service
+
+[Service]
+User=root
+Group=root
+ExecStart=/usr/bin/python3 {{ project_path }}/project/ConsoleTracker/ConsoleTrackerApp/scripts/ExternalClientSocket.py
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

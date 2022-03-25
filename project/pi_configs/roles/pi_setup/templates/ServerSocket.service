@@ -1,0 +1,13 @@
+[Unit]
+Description=Server Socket daemon
+After=network.target
+
+[Service]
+User=root
+Group=root
+ExecStart=/usr/bin/python3 {{ project_path }}/project/ConsoleTracker/ConsoleTrackerApp/scripts/ServerSocket.py
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

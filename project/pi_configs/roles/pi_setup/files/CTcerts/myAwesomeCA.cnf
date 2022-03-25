@@ -1,0 +1,18 @@
+distinguished_name  = req_distinguished_name
+x509_extensions     = root_ca
+
+[ req_distinguished_name ]
+countryName             = CA
+countryName_min         = 2
+countryName_max         = 2
+stateOrProvinceName     = ON
+localityName            = Toronto
+0.organizationName      = ConsoleTracker
+organizationalUnitName  = Software
+commonName              = CT
+commonName_max          = 64
+emailAddress            = gilldigen@gmail.com
+emailAddress_max        = 64
+
+[ root_ca ]
+basicConstraints            = critical, CA:true
