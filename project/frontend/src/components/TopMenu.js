@@ -71,7 +71,7 @@ function TopMenu({ auth }) {
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
-    navigate('/');
+    navigate('/login');
     window.location.reload();
   };
 

@@ -78,9 +78,6 @@ function Home({auth}) {
           </div>
         </div>
       }
-      {!auth &&
-        <div>Please login</div>
-      }
 
   </div>;
 }
