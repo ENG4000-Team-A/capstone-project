@@ -1,3 +1,11 @@
+* {
+    align-items: center;
+}
+
+.info {
+    padding: 5%;
+    color: white;
+}
 
 .timer_container {
     display: box;
@@ -7,27 +15,73 @@
     margin: auto;
     border-style: solid;
     color: grey;
-
 }
 
 .time {
     display: box;
     margin-top: 10%;
     margin-bottom: 10%;
-    font-size: xx-large;
-    color: black;
+    font-size: x-large;
+    color: white;
     justify-content: center;
     align-items: center;
+
 }
 
 .button {
     justify-content: center;
     align-items: center;
     display: box;
-    margin-top: 10%;
-    size: 150px;
+    size: 300px;
     margin: auto;
-    padding: 2%;
-
-    
+    padding: 5%;  
 }
+
+/* Styling for CIRCLE elements in countdown */
+.base-timer {
+    position: relative;
+    margin-top: 10%;
+    height: 300px;
+    width: 300px;
+    margin: auto;
+}
+
+.base-timer__circle {
+    fill: none;
+    stroke: none;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+.base-timer__path-elapsed {
+    stroke-width: 7px;
+    stroke: grey;
+}
+
+.base-timer__label {
+    position: absolute;
+    
+    /* Size should match the parent container */
+    width: 300px;
+    height: 300px;
+    top: 0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.base-timer__path-remaining {
+    stroke-width: 7px;
+    stroke-linecap: flat;
+    transform: rotate(90deg);
+    transform-origin: center;
+    transition: 1s linear all;
+    /* Active time colour */
+    stroke: white;
+}
+
+.base-timer__svg {
+    transform: scaleX(-1);
+  }

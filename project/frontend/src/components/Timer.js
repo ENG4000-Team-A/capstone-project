@@ -7,9 +7,24 @@ import { modalClasses, modalUnstyledClasses } from '@mui/material';
 
 const API_URL = "http://127.0.0.1:8000/timer/" + localStorage.getItem("user");
 const BASE_URL = "http://127.0.01:8000/"
+const COLOR_CODES = {
+  info: {
+    color: "green"
+  }
+};
+
+let remainingPathColor = COLOR_CODES.info.color;
+
+var timeLeftFormat = ""
 var timer
 var remainingTime
 var then
+var init = true
+
+
+// vars for circle element
+var TIME_LIMIT
+var progressFraction = 0;
 
 function StopTimer(user) {
   /**When STOP button is pressed:
@@ -25,7 +40,40 @@ function StopTimer(user) {
   xhr.send(JSON.stringify({
       "action": "stop"
   }));
+  window.location.replace(window.location.origin)
 }
+
+function updateTimeStringFormatted(h, m, s) {
+    timeLeftFormat = h + ":" + m + ":" + s
+  }
+
+function getTimeStringFormatted() {
+  // NaN means session is over
+  if (timeLeftFormat.includes('NaN')) {
+    return "Start a session"
+  } else {
+    return timeLeftFormat
+  } 
+}
+
+function setFraction(f) {
+  progressFraction = f
+}
+
+function setCircleDashArray() {
+  
+
+    const circleDasharray = `${(
+      progressFraction * 283
+      ).toFixed(0)} 283`;
+
+      if (progressFraction >= 0) {
+        document
+        .getElementById('base-timer-path-remaining')
+        .setAttribute('stroke-dasharray', circleDasharray)
+      }  
+  }
+
 
 function startCountdown(id){
   // timer starts automatically. ISSUE: timer flicker
@@ -35,7 +83,18 @@ function startCountdown(id){
 function countdown(id){
 
   var now = Math.floor(Date.now() / 1000);
-	remainingTime = then - now;
+
+  remainingTime = then - now;
+
+  if (init) {
+    TIME_LIMIT = remainingTime;
+    init = false
+  }
+
+  if (remainingTime/TIME_LIMIT >= 0) {
+    progressFraction = remainingTime/TIME_LIMIT
+  }
+  
 
 	var hour = Math.floor(remainingTime / (60 * 60) );
 	var min = Math.floor((remainingTime / 60) % 60 );
@@ -48,8 +107,10 @@ function countdown(id){
     StopTimer();
 	}
 
-	var result = hour +':'+ min +':'+ sec;
-	document.getElementById(id).innerHTML = result;
+  updateTimeStringFormatted(hour, min, sec);
+
+	document.getElementById(id).innerHTML = getTimeStringFormatted();
+  setCircleDashArray();
 }
 
 function Timer_Function() {
@@ -71,9 +132,33 @@ function Timer_Function() {
 
     return (
       <div className='timer_container'>
-          <div className='time' id="timer">
+        <div class='info'>
+          <div>Welcome {localStorage.getItem('user')}!</div>
+        </div>
+        <div class="base-timer">
+          <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <g class="base-timer__circle">
+              <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
+              <path
+                id="base-timer-path-remaining"
+                stroke-dasharray="140 140"
+                class="base-timer__path-remaining"
+                d="
+                  M 50, 50
+                  m -45, 0
+                  a 45,45 0 1,0 90,0
+                  a 45,45 0 1,0 -90,0
+                "
+              ></path>
+            </g>
+          </svg>
+        <span id='base-timer-label' class='base-timer__label'>
+        <div className='time' id="timer">
           {startCountdown("timer")}
-          </div>           
+        </div> 
+        </span>
+      </div>
+                    
           <div className='button'>
             <Button variant="contained" onClick={StopTimer}> STOP </Button>
           </div>
