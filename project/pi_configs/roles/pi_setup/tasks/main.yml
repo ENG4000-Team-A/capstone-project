@@ -24,11 +24,9 @@
     requirements: /root/requirements.txt
     executable: pip3
 
-
 - file:
     path: /var/www/consoletracker
     state: directory
-
 
 - shell:
     cmd: npm run build
@@ -38,14 +36,19 @@
     src: "{{ project_path }}/project/frontend/build/"
     dest: /var/www/consoletracker
 
+- name: Copy SSL certs for Nginx
+  copy:
+    src: CTcerts
+    dest: /var/
 
-- name: Copy ConsoleTracker systemd service
+- name: "Copy {{ item }} systemd service"
   template:
-    src: ConsoleTracker.service
+    src: "{{ item }}.service"
     dest: /etc/systemd/system
     owner: root
     group: root
     mode: 0644
+  with_items: ['ConsoleTracker', 'ServerSocket', 'ExternalClientSocket']
 
 - name: Copy nginx config
   copy:
@@ -84,11 +87,12 @@
     mode: 0644
 
 
-- name: Start ConsoleTracker service
+- name: "Start {{ item }} service"
   service:
-    name: ConsoleTracker
+    name: "{{ item }}"
     state: started
     enabled: yes
+  with_items: ['ConsoleTracker', 'ServerSocket', 'ExternalClientSocket']
 
 - name: Restart nginx
   service:

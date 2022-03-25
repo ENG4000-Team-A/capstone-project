@@ -1,11 +1,15 @@
 server {
     listen 80 default_server;
+    listen 443 ssl;
     server_name _;
-    root /var/www/consoletracker;
-    index index.html index.htm;	
+   
+    ssl_certificate /var/CTcerts/myAwesomeServer.cer; #path to cert
+    ssl_certificate_key /var/CTcerts/myAwesomeServer.pvk; #path to key
     
     location / {
-        try_files $uri $uri/ =404;
+        root /var/www/consoletracker;
+        index index.html index.htm;	
+        try_files $uri $uri/ /index.html;
     }
 
 }

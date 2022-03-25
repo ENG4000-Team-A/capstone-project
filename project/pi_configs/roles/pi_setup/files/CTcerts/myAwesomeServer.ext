@@ -1,0 +1,4 @@
+extendedKeyUsage = serverAuth
+
+[alt_names]
+IP.1 = 192.168.2.252
