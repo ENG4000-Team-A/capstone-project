@@ -111,13 +111,14 @@ function MachineInfo({ auth }) {
 
     return (
 
-        <div >
+        <div id="infoBox">
 
             {auth &&
                 <Paper
                     sx={{
                         p: 0,
                         margin: 'auto',
+                        padding: '30px',
                         maxWidth: 500,
                         flexGrow: 1,
                         backgroundColor: (theme) =>
@@ -139,19 +140,20 @@ function MachineInfo({ auth }) {
 
                             </Grid>
                             <Grid item xs={12}>
-                                {"UserName: "}
+                                {"Username : "}
                                 {userInfo.first_name}
                             </Grid>
                             <Grid item xs={12}>
-                                {"Time left On account (minutes): "}
+                                {"Time Left On Account : "}
                                 {(userInfo.time / 60).toFixed(1)}
+                                {" Minutes"}
                             </Grid>
                             <Grid item xs={12}>
-                                {"Machine Name: "}
+                                {"Machine Name : "}
                                 {machine.name}
                             </Grid>
                             <Grid item xs={12}>
-                                {"Machine Type: "}
+                                {"Machine Type : "}
                                 {machine.machine_type}
                             </Grid>
                             <Grid item xs={12}>
