@@ -1,13 +1,15 @@
-from .models import Machine, User_uses_machine, User
-from .scripts.SwitchScript import ConsoleSwitch
-from .InternalSocketConnect import InternalSocket
-from .notifications import sendSMS, NOTIF_TIMES
-from threading import Thread
-from django.utils import timezone
 import asyncio
-import time
-from kasa import Discover
 import sys
+import time
+from threading import Thread
+
+from django.utils import timezone
+from kasa import Discover
+
+from .InternalSocketConnect import InternalSocket
+from .models import Machine, User_uses_machine, User
+from .notifications import sendSMS, NOTIF_TIMES
+from .scripts.SwitchScript import ConsoleSwitch
 
 # Period in seconds in between syncing switches to machine state
 SYNC_PERIOD = 10

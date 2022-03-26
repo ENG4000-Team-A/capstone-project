@@ -2,27 +2,28 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Machine {{ machine.id }} Countdown</title>
+    <title>Machine {{ machine.id }} Countdown</title>
 </head>
 
 <body>
-  {% load static %}
-  <script src="{% static 'js/countdown.js' %}"></script>
-  <script>
+{% load static %}
+<script src="{% static 'js/countdown.js' %}"></script>
+<script>
     startCountdown("timer", {{epochTime}});
-  </script>
-  <h1>Countdown Timer for <strong style="color: red;">{{ machine.name }}</strong></h1>
-  <h2>In use by: <strong style="color: red;">{{ username }}</strong></h2>
-  <div>
+
+</script>
+<h1>Countdown Timer for <strong style="color: red;">{{ machine.name }}</strong></h1>
+<h2>In use by: <strong style="color: red;">{{ username }}</strong></h2>
+<div>
     <p>Time left: <strong style="color: red;" id="timer"></strong></p>
-  </div>
-  <div>
+</div>
+<div>
     <form method="post"> {% csrf_token %}
-      <input type="submit" name="button" value="End Session">
+        <input type="submit" name="button" value="End Session">
     </form>
-  </div>
+</div>
 </body>
 </html>

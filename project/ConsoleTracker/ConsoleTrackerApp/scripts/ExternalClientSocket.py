@@ -69,7 +69,7 @@ while True:
                             data["usernameExists"] = False
                             data["validPassword"] = False
                     s.sendall(json.dumps(data).encode())
-                else:                
+                else:
                     # only reached if serversocket is closed
                     # break loop to restart client
                     break

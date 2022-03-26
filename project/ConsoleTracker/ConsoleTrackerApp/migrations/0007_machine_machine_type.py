@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('ConsoleTrackerApp', '0006_auto_20220121_1946'),
     ]

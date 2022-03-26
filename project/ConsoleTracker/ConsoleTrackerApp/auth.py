@@ -1,5 +1,4 @@
 import jwt
-from django.forms.models import model_to_dict
 
 my_secret = 'my_super_secret'
 
@@ -11,10 +10,11 @@ def generateToken(User):
 def validToken(accessToken):
     payload = None
     try:
-        payload = jwt.decode(accessToken, key=my_secret, algorithms=['HS256',])
+        payload = jwt.decode(accessToken, key=my_secret, algorithms=['HS256', ])
     except Exception as e:
         return False, None
     return True, payload
+
 
 def getUsernameFromToken(request):
     accessToken = request.headers.get('Authorization')
@@ -23,4 +23,3 @@ def getUsernameFromToken(request):
         return None
     else:
         return payload["username"]
-
