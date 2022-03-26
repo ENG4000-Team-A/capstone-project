@@ -28,6 +28,7 @@ theme.typography.h3 = {
   fontSize: '1.2rem',
   '@media (min-width:600px)': {
     fontSize: '1.5rem',
+    position: 'relative',
   },
 
   // If screen width -> 900px, then our fontSize will be 2rem
@@ -89,7 +90,7 @@ function TopMenu({ auth }) {
           {/* Temporary Fix */}
           <ThemeProvider theme={theme}>
             <Typography variant="h3" component="div" sx={{ flexGrow: 1 }}>
-              ConsoleTracker
+              <p>ConsoleTracker</p>
             </Typography>
           </ThemeProvider>
 

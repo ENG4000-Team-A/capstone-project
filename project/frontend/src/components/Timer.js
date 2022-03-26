@@ -61,7 +61,10 @@ function StopTimer() {
 }
 
 function updateTimeStringFormatted(h, m, s) {
-    timeLeftFormat = h + ":" + m + ":" + s
+    var hours = h < 10 ? "0" + h : h
+    var minutes = m < 10 ? "0" + m : m
+    var seconds = s < 10 ? "0" + s : s
+    timeLeftFormat = hours + " : " + minutes + " : " + seconds
   }
 
 function getTimeStringFormatted() {
@@ -154,9 +157,6 @@ function Timer_Function() {
 
     return (
       <div className='timer_container'>
-        <div class='info'>
-          <div>Welcome {localStorage.getItem('user')}!</div>
-        </div>
         <div class="base-timer">
           <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <g class="base-timer__circle">

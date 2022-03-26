@@ -1,5 +1,8 @@
-body{
-    text-align: center;
+body {
     background-color: #282c34;
 }
- 
+
+#infoBox {
+    text-align: center;
+    padding-top: 50px;
+}

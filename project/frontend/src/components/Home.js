@@ -63,7 +63,7 @@ function Home({auth}) {
                   <div class="col-sm-12 col-6">
                     <div class="card dark">
                       <h3 class="light-header"> Time Remaining </h3>
-                      <h3> {(userInfo.time/ 60).toFixed(1)} minutes </h3>
+                      <h3> {(userInfo.time/ 60).toFixed(1)} Minutes </h3>
                     </div>
                   </div>
                   <div class="col-sm-12 col-6">
