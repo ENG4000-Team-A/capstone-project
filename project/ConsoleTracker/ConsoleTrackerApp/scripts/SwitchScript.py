@@ -1,7 +1,7 @@
 import asyncio
-import time
-from kasa import SmartPlug
+
 from kasa import Discover
+from kasa import SmartPlug
 
 
 # This function discovers all the IP's and switch names

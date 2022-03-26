@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import socket
-import selectors
-from socket import AF_INET, SOCK_STREAM
-from selectors import EVENT_READ, EVENT_WRITE
-from types import SimpleNamespace
 import json
+import selectors
+import socket
 import sys
+from selectors import EVENT_READ, EVENT_WRITE
+from socket import AF_INET, SOCK_STREAM
+from types import SimpleNamespace
 
 HOST = '127.0.0.1'
 PORT = 5073

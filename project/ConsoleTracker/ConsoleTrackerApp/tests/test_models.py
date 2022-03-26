@@ -1,9 +1,10 @@
 import datetime
 import sys
-import pytz
 
+import pytz
 from django.test import TestCase
 from django.utils import timezone
+
 from ..models import TimeStamp, Machine, User, User_uses_machine
 
 '''

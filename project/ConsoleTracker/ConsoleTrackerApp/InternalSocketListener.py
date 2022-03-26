@@ -16,7 +16,7 @@ def listen():
     # inner for reading socket
     while True:
         try:
-            s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((HOST, PORT))
             initMsg = {"conn_type": 1}
             s.sendall(json.dumps(initMsg).encode())
@@ -45,6 +45,7 @@ def listen():
                     break
         except:
             pass
+
 
 # Turn machine query to JSON format
 def dump(machine):

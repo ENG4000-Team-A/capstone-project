@@ -1,4 +1,3 @@
-from datetime import timedelta
 import json
 import socket
 
@@ -15,7 +14,7 @@ class InternalSocket:
                 s.settimeout(5)
                 s.connect((self.host, self.port))
                 s.sendall("{{\"msg\": \"{m}\", \"username\": \"{u}\", \"password\": \"{p}\",\"dest\": \"external\"}}"
-                        .format(m="Sending username & password", u=username, p=password).encode())
+                          .format(m="Sending username & password", u=username, p=password).encode())
                 data = s.recv(1024)
                 data = json.loads(data.decode())
             except socket.timeout:
@@ -32,7 +31,7 @@ class InternalSocket:
                 s.sendall(
                     "{{\"dest\": \"external\", \"msg\": \"{m}\", \"username\": \"{u}\", \"timeBalance\": {tb}, "
                     "\"timeDelta\": {td}}} "
-                    .format(m="timer_update", u=username, tb=timeBalance, td=timeDelta).encode())
+                        .format(m="timer_update", u=username, tb=timeBalance, td=timeDelta).encode())
                 data = s.recv(1024)
                 data = json.loads(data.decode())
             except socket.timeout:

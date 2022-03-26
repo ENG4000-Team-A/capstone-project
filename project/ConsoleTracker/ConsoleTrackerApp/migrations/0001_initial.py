@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -17,8 +16,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('hours', models.PositiveIntegerField(default=0)),
-                ('minutes', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(60)])),
-                ('seconds', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(60)])),
+                ('minutes', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(0),
+                                                                       django.core.validators.MaxValueValidator(60)])),
+                ('seconds', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(0),
+                                                                       django.core.validators.MaxValueValidator(60)])),
             ],
         ),
     ]

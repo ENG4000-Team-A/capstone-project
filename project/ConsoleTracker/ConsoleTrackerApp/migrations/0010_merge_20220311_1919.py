@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('ConsoleTrackerApp', '0009_machine_mac'),
         ('ConsoleTrackerApp', '0009_user_uses_machine_init_balance'),

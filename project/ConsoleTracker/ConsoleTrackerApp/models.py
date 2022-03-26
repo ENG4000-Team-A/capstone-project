@@ -1,8 +1,8 @@
-from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils import timezone
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from .scripts.SwitchScript import ConsoleSwitch
 
@@ -46,7 +46,9 @@ class Machine(models.Model):
     machine_type = models.CharField(max_length=50, blank=True, null=False)
 
     def __str__(self):
-            return self.name
+        return self.name
+
+
 '''
     User (Model)
         - username = text field
