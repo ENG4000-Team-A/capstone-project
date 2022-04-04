@@ -5,14 +5,20 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import { Alert } from '@mui/material';
 import { AlertTitle } from '@mui/material'
-import ps5_logo from "../image/PS5_logo_placeholder.png";
-import xboxSeriesXLogo from "../image/XBox_Series_placeholder.png"; // xbox version
 import CardMedia from "@mui/material/CardMedia";
 import { Card } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+
+
+// Image Exportation
+import playstationLogo from "../image/Playstation_1280x_720.jpg";
+import xboxLogo from "../image/Xbox_1280x_720.jpg"; // xbox version
+import nintendoLogo from "../image/Nintendo_1280x_720.jpg";
+import arcadeLogo from "../image/Arcade_1280x_720.jpg";
+import error from "../image/Error_1280x_720.jpg";
 
 function MachineInfo({ auth }) {
     const { id } = useParams()
@@ -36,11 +42,11 @@ function MachineInfo({ auth }) {
     }, []);
     useEffect(() => {
         axios.get('http://localhost:8000/users/',
-        {
-          headers: {
-            Authorization: localStorage.getItem("authToken")
-          }
-        }
+            {
+                headers: {
+                    Authorization: localStorage.getItem("authToken")
+                }
+            }
         )
             .then(response => {
                 console.log(response.data.data);
@@ -66,10 +72,13 @@ function MachineInfo({ auth }) {
                         Start Playing
                     </Button>
 
-                    <Alert text-align="center" severity="error">
+                    <div className="errorMessage__container">
+                    <Alert severity="error" >
                         <AlertTitle>Error</AlertTitle>
                         You must Purchase time on your account to play
                     </Alert>
+                        </div>
+
                 </div>
             )
         }
@@ -85,11 +94,11 @@ function MachineInfo({ auth }) {
             axios.post("http://localhost:8000/start_timer/" + id, {
                 uname: userInfo.username
             },
-            {
-                headers: {
-                  Authorization: localStorage.getItem("authToken")
+                {
+                    headers: {
+                        Authorization: localStorage.getItem("authToken")
+                    }
                 }
-            }
             ).then(function (response) {
                 console.log(response);
                 var getUrl = window.location;
@@ -103,11 +112,19 @@ function MachineInfo({ auth }) {
     }
     function returnConsoleImage(console_name) {
         switch (console_name) {
-            case "PS5": return ps5_logo;
-            case "Xbox 1": return xboxSeriesXLogo;
-
+            case "PS3": return playstationLogo;
+            case "PS4": return playstationLogo;
+            case "PS5": return playstationLogo;
+            case "Xbox One": return xboxLogo;
+            case "Xbox One S": return xboxLogo;
+            case "Xbox One X": return xboxLogo;
+            case "Xbox Series X": return xboxLogo;
+            case "Nintendo Switch": return nintendoLogo;
+            case "Wii U": return nintendoLogo;
+            case "Arcade": return arcadeLogo;
+            default: return error;
         }
-    }
+      }
 
     return (
 
@@ -129,10 +146,10 @@ function MachineInfo({ auth }) {
                         <Grid container spacing={4}>
                             <Grid item xs={12}>
 
-                                <Card sx={{ maxWidth: 5000 }}>
+                                <Card variant="outlined" sx={{ maxWidth: 500 }}>
                                     <CardMedia
                                         component="img"
-                                        height="100"
+                                        height="200"
                                         image={returnConsoleImage(machine.machine_type)}
                                         alt="logo"
                                     />
