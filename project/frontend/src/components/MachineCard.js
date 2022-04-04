@@ -17,19 +17,27 @@ Relative imports outside of src/ are not supported. You can either move the imag
 Images currently does not fit in to the card. Will resize it when dummy information are replaced.
 */
 
-import ps5_logo from "../image/Playstation_1280x_720.jpg";
-import xboxSeriesXLogo from "../image/Xbox_1280x_720.jpg"; // xbox version
+import playstationLogo from "../image/Playstation_1280x_720.jpg";
+import xboxLogo from "../image/Xbox_1280x_720.jpg"; // xbox version
 import nintendoLogo from "../image/Nintendo_1280x_720.jpg";
+import arcadeLogo from "../image/Arcade_1280x_720.jpg";
 import error from "../image/Error_1280x_720.jpg";
 
 import { useNavigate } from "react-router-dom";
 
-function returnConsoleImage (console_name) {
-  switch(console_name) {
-    case "PS4": return ps5_logo;
-    case "Xbox 1": return xboxSeriesXLogo;
-    case "Nintendo": return nintendoLogo;
-    default: return error;
+function returnConsoleImage(console_name) {
+  switch (console_name) {
+      case "PS3": return playstationLogo;
+      case "PS4": return playstationLogo;
+      case "PS5": return playstationLogo;
+      case "Xbox One": return xboxLogo;
+      case "Xbox One S": return xboxLogo;
+      case "Xbox One X": return xboxLogo;
+      case "Xbox Series X": return xboxLogo;
+      case "Nintendo Switch": return nintendoLogo;
+      case "Wii U": return nintendoLogo;
+      case "Arcade": return arcadeLogo;
+      default: return error;
   }
 }
 
