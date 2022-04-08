@@ -186,14 +186,12 @@ def send_notifications(now):
     for machine in active_machines:
         # looks for valid format phone number without country calling code
         if len(machine.user.phone_number) == 10:
-            # country code for Canada and US, will need proper way to get for other countries
-            country_code = "+1"
             timer = int((machine.end_time - now).total_seconds())
             if timer in NOTIF_TIMES:
                 msg = str(int(timer / 60)) + " minutes remaining on " + machine.machine.name + "."
                 msg += '\nPlease use website for accurate timer.'
                 # print('sending sms')
-                t = Thread(target=sendSMS, args=(country_code + machine.user.phone_number, msg,))
+                t = Thread(target=sendSMS, args=(machine.user.phone_number, msg,))
                 t.setName('SMS')
                 t.start()
 
