@@ -1,5 +1,5 @@
-# Console Tracker
-A Console Management System for Gaming Cafes
+# Console Tracker :video_game:
+A Console Management System for Gaming Cafes :coffee:
 
 ## Description
 Currently, Gaming Cafes are able to exercise a high degree of control over the computers that their customers can use. Some of these important functions include granting/revoking access to the computer, maintaining a time limit per customer, and the ability to gradually warn a customer of their remaining time. However, this control is limited to computers only. Gaming Cafes are unable to exercise the same level of control over consoles such as Xbox, PlayStation and other gaming devices. Console Tracker aims to rectify this by providing a lightweight web application that will allow our users to control a network of smart switches, and track user information and metadata in a similar way to existing solutions.
