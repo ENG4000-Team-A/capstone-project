@@ -37,9 +37,6 @@ Currently, Gaming Cafes are able to exercise a high degree of control over the c
 |**1.** Navigate into the [frontend](https://github.com/ENG4000-Team-A/capstone-project/tree/main/project/frontend) directory then run ```set HTTPS=true && npm start```|
 |**2.** Open a new terminal and naviagte into [frontend](https://github.com/ENG4000-Team-A/capstone-project/tree/main/project/frontend) directory then run the ```ssl_setup.bat``` script as administrator |
 
-## Documentation
-* [Agile Roadmap](https://github.com/ENG4000-Team-A/capstone-project/blob/main/documents/Agile%20Roadmap.pdf)
-
 ## Bug Reports
 Please add any Bugs or Enhancements in the [Issues](https://github.com/ENG4000-Team-A/capstone-project/issues) of this Repository
 
